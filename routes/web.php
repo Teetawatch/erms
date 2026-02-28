@@ -7,7 +7,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\WorkLogController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\UserController;
@@ -23,8 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
 
-    Route::get('worklogs', [WorkLogController::class, 'index'])->name('worklogs.index');
-
+    
     Route::get('calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('api/calendar-events', [CalendarController::class, 'events'])->name('calendar.events');
 

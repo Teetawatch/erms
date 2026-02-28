@@ -52,7 +52,7 @@
                         <span class="bg-gradient-to-r from-[#4f8ef7] to-[#7c5cfc] bg-clip-text text-transparent">อย่างมืออาชีพ</span>
                     </h1>
                     <p class="text-erms-muted text-lg mb-8 max-w-xl mx-auto">
-                        ERMS ช่วยให้คุณติดตามโครงการ มอบหมายงาน บันทึกเวลาทำงาน และดูรายงานสรุปได้ง่ายดาย
+                        ERMS ช่วยให้คุณติดตามโครงการ มอบหมายงาน และดูรายงานสรุปได้ง่ายดาย
                     </p>
                     @if (Route::has('login'))
                         <div class="flex items-center justify-center gap-4">
@@ -66,20 +66,13 @@
                 </div>
 
                 {{-- Feature Cards --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl w-full">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 max-w-4xl w-full">
                     <div class="card p-6 text-center">
                         <div class="w-12 h-12 rounded-xl bg-erms-blue/10 flex items-center justify-center mx-auto mb-4">
                             <svg class="w-6 h-6 text-erms-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
                         </div>
                         <h3 class="font-heading font-semibold text-erms-text mb-2">จัดการโครงการ</h3>
                         <p class="text-sm text-erms-muted">สร้างโครงการ ติดตามความคืบหน้า มอบหมายงานให้ทีม</p>
-                    </div>
-                    <div class="card p-6 text-center">
-                        <div class="w-12 h-12 rounded-xl bg-erms-green/10 flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-6 h-6 text-erms-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                        <h3 class="font-heading font-semibold text-erms-text mb-2">บันทึกเวลา</h3>
-                        <p class="text-sm text-erms-muted">จับเวลาทำงาน บันทึกชั่วโมง ดูสรุปรายสัปดาห์</p>
                     </div>
                     <div class="card p-6 text-center">
                         <div class="w-12 h-12 rounded-xl bg-erms-purple/10 flex items-center justify-center mx-auto mb-4">
