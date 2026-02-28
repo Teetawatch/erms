@@ -23,7 +23,7 @@
                                 {{ $eventLabels[$log->event] ?? $log->event ?? $log->description }}
                             </span>
                         </td>
-                        @php $modelLabels = ['User' => 'ผู้ใช้', 'Project' => 'โครงการ', 'Task' => 'งาน', 'Department' => 'แผนก', 'WorkLog' => 'บันทึกเวลา', 'Comment' => 'ความคิดเห็น', 'Attachment' => 'ไฟล์แนบ']; @endphp
+                        @php $modelLabels = ['User' => 'ผู้ใช้', 'Project' => 'โครงการ', 'Task' => 'งาน', 'Department' => 'แผนก', 'Comment' => 'ความคิดเห็น', 'Attachment' => 'ไฟล์แนบ']; @endphp
                         <td class="px-5 py-3 text-erms-muted">{{ $modelLabels[class_basename($log->subject_type ?? '')] ?? class_basename($log->subject_type ?? '') }} #{{ $log->subject_id }}</td>
                         <td class="px-5 py-3 text-xs text-erms-muted">
                             @if($log->properties && $log->properties->count())

@@ -8,7 +8,6 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\TaskUpdate;
 use App\Models\User;
-use App\Models\WorkLog;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -102,10 +101,6 @@ class DemoDataSeeder extends Seeder
         $task1 = Task::first();
         TaskUpdate::create(['task_id' => $task1->id, 'user_id' => $emp1->id, 'old_status' => 'todo', 'new_status' => 'in_progress', 'note' => 'เริ่มทำงาน']);
         TaskUpdate::create(['task_id' => $task1->id, 'user_id' => $emp1->id, 'old_status' => 'in_progress', 'new_status' => 'done', 'note' => 'เสร็จแล้ว']);
-
-        WorkLog::create(['user_id' => $emp1->id, 'task_id' => $task1->id, 'date' => now()->subDays(1), 'hours' => 4.5, 'description' => 'ออกแบบ schema สำหรับ customers, orders']);
-        WorkLog::create(['user_id' => $emp1->id, 'task_id' => $task1->id, 'date' => now(), 'hours' => 2.0, 'description' => 'Review และปรับปรุง schema']);
-        WorkLog::create(['user_id' => $emp2->id, 'task_id' => Task::find(2)->id, 'date' => now(), 'hours' => 6.0, 'description' => 'ออกแบบ Dashboard mockup']);
 
         Comment::create(['task_id' => $task1->id, 'user_id' => $manager->id, 'body' => 'Schema ดูดีแล้ว ขอเพิ่ม index สำหรับ search ด้วย']);
         Comment::create(['task_id' => $task1->id, 'user_id' => $emp1->id, 'body' => 'เพิ่ม index เรียบร้อยแล้วครับ']);

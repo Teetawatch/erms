@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Task;
-use App\Models\WorkLog;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -21,9 +20,9 @@ class DashboardController extends Controller
             ? Task::whereDate('due_date', today())->count()
             : $user->assignedTasks()->whereDate('due_date', today())->count();
 
-        $hoursThisWeek = WorkLog::where('user_id', $user->id)
-            ->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()])
-            ->sum('hours');
+        $completedThisWeek = $user->hasRole('admin')
+            ? Task::where('status', 'done')->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()])->count()
+            : $user->assignedTasks()->where('status', 'done')->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()])->count();
 
         $pendingReview = $user->hasRole('admin')
             ? Task::where('status', 'review')->count()
@@ -37,7 +36,7 @@ class DashboardController extends Controller
             ->get();
 
         return view('dashboard', compact(
-            'totalProjects', 'tasksToday', 'hoursThisWeek',
+            'totalProjects', 'tasksToday', 'completedThisWeek',
             'pendingReview', 'myTasks'
         ));
     }

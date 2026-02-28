@@ -69,11 +69,6 @@ class User extends Authenticatable
         return $this->hasMany(Task::class, 'assigned_to');
     }
 
-    public function workLogs(): HasMany
-    {
-        return $this->hasMany(WorkLog::class);
-    }
-
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);

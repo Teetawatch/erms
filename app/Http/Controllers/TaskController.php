@@ -15,7 +15,7 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
-        $task->load(['project', 'assignee', 'comments.user', 'attachments.user', 'taskUpdates.user', 'workLogs.user']);
+        $task->load(['project', 'assignee', 'comments.user', 'attachments.user', 'taskUpdates.user']);
         return view('tasks.show', compact('task'));
     }
 }

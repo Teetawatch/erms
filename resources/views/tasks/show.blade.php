@@ -106,28 +106,6 @@
 
         {{-- Sidebar --}}
         <div class="space-y-6">
-            {{-- Work Logs --}}
-            <div class="card">
-                <div class="px-5 py-4 border-b border-erms-border">
-                    <h2 class="font-heading font-bold text-sm">บันทึกเวลา ({{ number_format($task->workLogs->sum('hours'), 1) }} ชม.)</h2>
-                </div>
-                <div class="divide-y divide-erms-border/50 max-h-64 overflow-y-auto">
-                    @forelse($task->workLogs as $log)
-                        <div class="px-5 py-2.5">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs text-erms-muted">{{ $log->date->translatedFormat('d M') }} • {{ $log->user->name }}</span>
-                                <span class="text-xs font-medium text-erms-blue">{{ number_format($log->hours, 1) }} ชม.</span>
-                            </div>
-                            @if($log->description)
-                                <p class="text-xs text-erms-muted mt-0.5">{{ $log->description }}</p>
-                            @endif
-                        </div>
-                    @empty
-                        <div class="px-5 py-4 text-center text-erms-muted text-xs">ยังไม่มีบันทึก</div>
-                    @endforelse
-                </div>
-            </div>
-
             {{-- Task History --}}
             <div class="card">
                 <div class="px-5 py-4 border-b border-erms-border">

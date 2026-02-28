@@ -35,11 +35,6 @@ class Task extends Model
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
-    public function workLogs(): HasMany
-    {
-        return $this->hasMany(WorkLog::class);
-    }
-
     public function taskUpdates(): HasMany
     {
         return $this->hasMany(TaskUpdate::class);
