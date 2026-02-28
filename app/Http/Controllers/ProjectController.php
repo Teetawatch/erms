@@ -31,6 +31,7 @@ class ProjectController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'required|in:planning,in_progress,done',
+            'start_date' => 'nullable|date',
             'deadline' => 'nullable|date',
             'members' => 'array',
             'members.*' => 'exists:users,id',
@@ -40,6 +41,7 @@ class ProjectController extends Controller
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'status' => $validated['status'],
+            'start_date' => $validated['start_date'] ?? null,
             'deadline' => $validated['deadline'] ?? null,
             'created_by' => $request->user()->id,
         ]);
@@ -70,6 +72,7 @@ class ProjectController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'required|in:planning,in_progress,done',
+            'start_date' => 'nullable|date',
             'deadline' => 'nullable|date',
             'members' => 'array',
             'members.*' => 'exists:users,id',
@@ -79,6 +82,7 @@ class ProjectController extends Controller
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'status' => $validated['status'],
+            'start_date' => $validated['start_date'] ?? null,
             'deadline' => $validated['deadline'] ?? null,
         ]);
 

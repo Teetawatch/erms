@@ -13,7 +13,7 @@
                 <label class="block text-sm text-erms-muted mb-1">รายละเอียด</label>
                 <textarea name="description" class="input-field" rows="4">{{ old('description', $project->description) }}</textarea>
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm text-erms-muted mb-1">สถานะ</label>
                     <select name="status" class="input-field">
@@ -21,6 +21,10 @@
                         <option value="in_progress" @selected($project->status === 'in_progress')>กำลังดำเนินการ</option>
                         <option value="done" @selected($project->status === 'done')>เสร็จสิ้น</option>
                     </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-erms-muted mb-1">วันเริ่มต้น</label>
+                    <input type="date" name="start_date" value="{{ old('start_date', $project->start_date?->format('Y-m-d')) }}" class="input-field">
                 </div>
                 <div>
                     <label class="block text-sm text-erms-muted mb-1">กำหนดส่ง</label>

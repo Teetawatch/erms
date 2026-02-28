@@ -36,6 +36,16 @@
                         </select>
                     </div>
                     <div>
+                        <label class="block text-sm text-erms-muted mb-1">ชั่วโมงประมาณ</label>
+                        <input type="number" wire:model="newEstimatedHours" class="input-field" min="0" placeholder="ชม.">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-erms-muted mb-1">วันเริ่มต้น</label>
+                        <input type="date" wire:model="newStartDate" class="input-field">
+                    </div>
+                    <div>
                         <label class="block text-sm text-erms-muted mb-1">กำหนดส่ง</label>
                         <input type="date" wire:model="newDueDate" class="input-field">
                     </div>
@@ -109,9 +119,15 @@
                                         @if($task->assignee)
                                             <img src="{{ $task->assignee->avatar_url }}" alt="" class="w-5 h-5 rounded-full" title="{{ $task->assignee->name }}">
                                         @endif
+                                        @if($task->subtasks->count())
+                                            <span class="text-[10px] text-erms-muted flex items-center gap-0.5" title="งานย่อย">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                                                {{ $task->subtasks->where('status', 'done')->count() }}/{{ $task->subtasks->count() }}
+                                            </span>
+                                        @endif
                                     </div>
                                     @if($task->due_date)
-                                        <span class="text-xs {{ $task->due_date->isPast() ? 'text-erms-red' : 'text-erms-muted' }}">
+                                        <span class="text-xs {{ $task->due_date->isPast() && $task->status !== 'done' ? 'text-erms-red' : 'text-erms-muted' }}">
                                             {{ $task->due_date->translatedFormat('d M') }}
                                         </span>
                                     @endif

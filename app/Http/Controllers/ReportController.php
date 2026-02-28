@@ -22,7 +22,7 @@ class ReportController extends Controller
         $completedTasks = 0;
 
         if ($selectedUserId) {
-            $tasks = Task::with('project', 'assignedUser')
+            $tasks = Task::with('project', 'assignee')
                 ->where('assigned_to', $selectedUserId)
                 ->whereYear('created_at', substr($month, 0, 4))
                 ->whereMonth('created_at', substr($month, 5, 2))

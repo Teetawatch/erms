@@ -18,6 +18,8 @@ class KanbanBoard extends Component
     public $newPriority = 'medium';
     public $newAssignedTo = '';
     public $newDueDate = '';
+    public $newStartDate = '';
+    public $newEstimatedHours = '';
     public $newProjectId = '';
     public $newStatus = 'todo';
 
@@ -31,7 +33,8 @@ class KanbanBoard extends Component
     public function getTasksProperty()
     {
         $user = auth()->user();
-        $query = Task::with(['assignee', 'project']);
+        $query = Task::with(['assignee', 'project', 'subtasks'])
+            ->whereNull('parent_id');
 
         if ($this->projectId) {
             $query->where('project_id', $this->projectId);
@@ -70,7 +73,9 @@ class KanbanBoard extends Component
             'newProjectId' => 'required|exists:projects,id',
             'newPriority' => 'required|in:low,medium,high,urgent',
             'newAssignedTo' => 'nullable|exists:users,id',
+            'newStartDate' => 'nullable|date',
             'newDueDate' => 'nullable|date',
+            'newEstimatedHours' => 'nullable|integer|min:0',
         ]);
 
         $task = Task::create([
@@ -80,7 +85,9 @@ class KanbanBoard extends Component
             'status' => $this->newStatus,
             'priority' => $this->newPriority,
             'assigned_to' => $this->newAssignedTo ?: null,
+            'start_date' => $this->newStartDate ?: null,
             'due_date' => $this->newDueDate ?: null,
+            'estimated_hours' => $this->newEstimatedHours ?: null,
             'sort_order' => Task::where('status', $this->newStatus)->max('sort_order') + 1,
         ]);
 
@@ -129,7 +136,9 @@ class KanbanBoard extends Component
         $this->newDescription = '';
         $this->newPriority = 'medium';
         $this->newAssignedTo = '';
+        $this->newStartDate = '';
         $this->newDueDate = '';
+        $this->newEstimatedHours = '';
         $this->newProjectId = $this->projectId ?? '';
         $this->newStatus = 'todo';
     }

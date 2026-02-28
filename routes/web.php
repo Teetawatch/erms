@@ -22,7 +22,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
 
-    
+    Route::get('templates', function () {
+        return view('templates.index');
+    })->name('templates.index');
+
     Route::get('calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('api/calendar-events', [CalendarController::class, 'events'])->name('calendar.events');
 

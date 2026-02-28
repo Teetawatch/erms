@@ -14,12 +14,14 @@ class Project extends Model
 {
     use HasFactory, LogsActivity;
 
-    protected $fillable = ['name', 'description', 'status', 'deadline', 'created_by'];
+    protected $fillable = ['name', 'description', 'status', 'start_date', 'deadline', 'created_by', 'is_template'];
 
     protected function casts(): array
     {
         return [
             'deadline' => 'date',
+            'start_date' => 'date',
+            'is_template' => 'boolean',
         ];
     }
 
@@ -36,6 +38,16 @@ class Project extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function customFields(): HasMany
+    {
+        return $this->hasMany(CustomField::class)->orderBy('sort_order');
+    }
+
+    public function automationRules(): HasMany
+    {
+        return $this->hasMany(AutomationRule::class);
     }
 
     public function getProgressAttribute(): int

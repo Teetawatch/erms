@@ -14,14 +14,17 @@ class Task extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'project_id', 'title', 'description', 'status',
-        'priority', 'assigned_to', 'due_date', 'sort_order',
+        'project_id', 'parent_id', 'title', 'description', 'status',
+        'priority', 'assigned_to', 'due_date', 'start_date',
+        'sort_order', 'estimated_hours', 'progress', 'tags',
     ];
 
     protected function casts(): array
     {
         return [
             'due_date' => 'date',
+            'start_date' => 'date',
+            'tags' => 'array',
         ];
     }
 
@@ -48,6 +51,38 @@ class Task extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Task::class, 'parent_id');
+    }
+
+    public function subtasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'parent_id');
+    }
+
+    public function dependencies(): HasMany
+    {
+        return $this->hasMany(TaskDependency::class);
+    }
+
+    public function dependents(): HasMany
+    {
+        return $this->hasMany(TaskDependency::class, 'depends_on_task_id');
+    }
+
+    public function customFieldValues(): HasMany
+    {
+        return $this->hasMany(CustomFieldValue::class);
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->dependencies()
+            ->whereHas('dependsOnTask', fn($q) => $q->where('status', '!=', 'done'))
+            ->exists();
     }
 
     public function getActivitylogOptions(): LogOptions
