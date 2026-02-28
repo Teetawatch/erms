@@ -229,12 +229,10 @@
                             เปิดเต็มหน้า
                         </a>
                     </div>
-                    <div class="p-5" x-html="taskId ? '' : ''">
-                        <template x-if="taskId">
-                            <div>
-                                <livewire:task-detail :task="1" :key="'panel-placeholder'" />
-                            </div>
-                        </template>
+                    <div class="p-5">
+                        <p class="text-[13px] text-erms-muted text-center py-8">
+                            <a :href="'/tasks/' + taskId" class="btn-primary" x-show="taskId">เปิดรายละเอียดงาน</a>
+                        </p>
                     </div>
                 </div>
             </div>
