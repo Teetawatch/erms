@@ -5,6 +5,9 @@ namespace App\Livewire;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\TaskUpdate;
+use App\Models\User;
+use App\Notifications\TaskAssigned;
+use App\Notifications\TaskStatusChanged;
 use Livewire\Component;
 
 class KanbanBoard extends Component
@@ -12,6 +15,11 @@ class KanbanBoard extends Component
     public $projectId = null;
     public $showCreateModal = false;
     public $editingTask = null;
+
+    // Filters
+    public $filterPriority = '';
+    public $filterAssignee = '';
+    public $searchQuery = '';
 
     public $newTitle = '';
     public $newDescription = '';
@@ -42,7 +50,26 @@ class KanbanBoard extends Component
             $query->where('assigned_to', $user->id);
         }
 
+        if ($this->filterPriority) {
+            $query->where('priority', $this->filterPriority);
+        }
+
+        if ($this->filterAssignee) {
+            $query->where('assigned_to', $this->filterAssignee);
+        }
+
+        if ($this->searchQuery) {
+            $query->where('title', 'like', '%' . $this->searchQuery . '%');
+        }
+
         return $query->orderBy('sort_order')->get()->groupBy('status');
+    }
+
+    public function clearFilters()
+    {
+        $this->filterPriority = '';
+        $this->filterAssignee = '';
+        $this->searchQuery = '';
     }
 
     public function getProjectsProperty()
@@ -99,6 +126,11 @@ class KanbanBoard extends Component
             'note' => 'สร้างงานใหม่',
         ]);
 
+        // Notify assigned user
+        if ($task->assigned_to && $task->assigned_to !== auth()->id()) {
+            User::find($task->assigned_to)?->notify(new TaskAssigned($task));
+        }
+
         $this->showCreateModal = false;
         $this->resetForm();
     }
@@ -123,6 +155,11 @@ class KanbanBoard extends Component
             'status' => $newStatus,
             'sort_order' => $newOrder,
         ]);
+
+        // Notify assigned user about status change
+        if ($oldStatus !== $newStatus && $task->assigned_to && $task->assigned_to !== auth()->id()) {
+            $task->assignee?->notify(new TaskStatusChanged($task, $oldStatus, $newStatus, auth()->user()->name));
+        }
     }
 
     public function deleteTask($taskId)

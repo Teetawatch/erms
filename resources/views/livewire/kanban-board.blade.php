@@ -75,6 +75,33 @@
     </div>
     @endif
 
+    {{-- ═══ Filter Bar ═══ --}}
+    <div class="flex flex-wrap items-center gap-2 mb-4">
+        <div class="relative flex-1 min-w-[160px] max-w-[220px]">
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-erms-muted pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" wire:model.live.debounce.300ms="searchQuery" class="input-field !pl-9 !py-1.5 !text-[13px]" placeholder="ค้นหางาน...">
+        </div>
+        <select wire:model.live="filterPriority" class="input-field !w-auto !py-1.5 !text-[13px] !pr-8">
+            <option value="">ความสำคัญทั้งหมด</option>
+            <option value="urgent">เร่งด่วน</option>
+            <option value="high">สูง</option>
+            <option value="medium">ปานกลาง</option>
+            <option value="low">ต่ำ</option>
+        </select>
+        <select wire:model.live="filterAssignee" class="input-field !w-auto !py-1.5 !text-[13px] !pr-8">
+            <option value="">ผู้รับผิดชอบทั้งหมด</option>
+            @foreach($this->users as $user)
+                <option value="{{ $user->id }}">{{ $user->name }}</option>
+            @endforeach
+        </select>
+        @if($filterPriority || $filterAssignee || $searchQuery)
+            <button wire:click="clearFilters" class="text-2xs text-erms-red hover:underline font-medium cursor-pointer flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                ล้างตัวกรอง
+            </button>
+        @endif
+    </div>
+
     {{-- ═══ Kanban Board (Asana-style columns) ═══ --}}
     <div class="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1" x-data="kanbanDragDrop()" x-init="initSortable()">
         @php

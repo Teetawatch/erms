@@ -237,6 +237,9 @@
                 </div>
             </div>
 
+            {{-- ═══════ GLOBAL SEARCH ═══════ --}}
+            <livewire:global-search />
+
             {{-- ═══════ QUICK CREATE TASK MODAL ═══════ --}}
             <livewire:quick-create-task />
 
@@ -263,6 +266,63 @@
                             e.preventDefault();
                             Livewire.dispatch('open-quick-create');
                         }
+                    }
+                }
+            }
+
+            // @Mention autocomplete for comments
+            function commentMention() {
+                return {
+                    showSuggestions: false,
+                    suggestions: [],
+                    highlightedIndex: 0,
+                    allUsers: @json(\App\Models\User::select('id', 'name', 'avatar')->get()->map(fn($u) => ['id' => $u->id, 'name' => $u->name, 'avatar' => $u->avatar_url])),
+
+                    onInput(e) {
+                        const val = e.target.value;
+                        const cursorPos = e.target.selectionStart;
+                        const textBeforeCursor = val.substring(0, cursorPos);
+                        const mentionMatch = textBeforeCursor.match(/@(\S*)$/);
+
+                        if (mentionMatch) {
+                            const search = mentionMatch[1].toLowerCase();
+                            this.suggestions = this.allUsers.filter(u =>
+                                u.name.toLowerCase().includes(search)
+                            ).slice(0, 5);
+                            this.showSuggestions = this.suggestions.length > 0;
+                            this.highlightedIndex = 0;
+                        } else {
+                            this.showSuggestions = false;
+                        }
+                    },
+
+                    selectUser(user) {
+                        const input = this.$refs.commentInput;
+                        const val = input.value;
+                        const cursorPos = input.selectionStart;
+                        const textBeforeCursor = val.substring(0, cursorPos);
+                        const mentionStart = textBeforeCursor.lastIndexOf('@');
+                        const newVal = val.substring(0, mentionStart) + '@' + user.name + ' ' + val.substring(cursorPos);
+                        input.value = newVal;
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                        this.showSuggestions = false;
+                        input.focus();
+                        const newPos = mentionStart + user.name.length + 2;
+                        input.setSelectionRange(newPos, newPos);
+                    },
+
+                    selectSuggestion() {
+                        if (this.suggestions[this.highlightedIndex]) {
+                            this.selectUser(this.suggestions[this.highlightedIndex]);
+                        }
+                    },
+
+                    highlightNext() {
+                        this.highlightedIndex = (this.highlightedIndex + 1) % this.suggestions.length;
+                    },
+
+                    highlightPrev() {
+                        this.highlightedIndex = (this.highlightedIndex - 1 + this.suggestions.length) % this.suggestions.length;
                     }
                 }
             }

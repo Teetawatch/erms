@@ -6,10 +6,14 @@ use App\Models\Attachment;
 use App\Models\Task;
 use App\Models\TaskDependency;
 use App\Models\TaskUpdate;
+use App\Notifications\TaskStatusChanged;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class TaskDetail extends Component
 {
+    use WithFileUploads;
+
     public Task $task;
 
     // Subtask form
@@ -28,6 +32,12 @@ class TaskDetail extends Component
     public $showLinkForm = false;
     public $linkName = '';
     public $linkUrl = '';
+
+    // Inline comment
+    public $commentBody = '';
+
+    // File upload
+    public $uploadFiles = [];
 
     protected $listeners = ['refreshTask' => '$refresh'];
 
@@ -130,7 +140,89 @@ class TaskDetail extends Component
             'note' => null,
         ]);
 
+        // Notify assigned user about status change
+        if ($oldStatus !== $status && $this->task->assigned_to && $this->task->assigned_to !== auth()->id()) {
+            $this->task->assignee?->notify(new TaskStatusChanged($this->task, $oldStatus, $status, auth()->user()->name));
+        }
+
         $this->task->refresh();
+    }
+
+    public function addComment()
+    {
+        $this->validate(['commentBody' => 'required|string|max:2000']);
+
+        $comment = $this->task->comments()->create([
+            'user_id' => auth()->id(),
+            'body' => $this->commentBody,
+        ]);
+
+        $comment->load(['user', 'task']);
+
+        // Notify task assignee
+        if ($this->task->assigned_to && $this->task->assigned_to !== auth()->id()) {
+            $this->task->assignee->notify(new \App\Notifications\NewComment($comment));
+        }
+
+        // Notify @mentioned users
+        preg_match_all('/@(\S+)/', $this->commentBody, $matches);
+        if (!empty($matches[1])) {
+            $mentionedUsers = \App\Models\User::whereIn('name', $matches[1])->get();
+            foreach ($mentionedUsers as $mentioned) {
+                if ($mentioned->id !== auth()->id()) {
+                    $mentioned->notify(new \App\Notifications\MentionedInComment($comment));
+                }
+            }
+        }
+
+        $this->commentBody = '';
+        $this->task->refresh();
+        $this->dispatch('toast', message: 'เพิ่มความคิดเห็นเรียบร้อย', type: 'success');
+    }
+
+    public function deleteComment($commentId)
+    {
+        $comment = \App\Models\Comment::find($commentId);
+        if ($comment && ($comment->user_id === auth()->id() || auth()->user()->hasRole('admin'))) {
+            $comment->delete();
+            $this->task->refresh();
+            $this->dispatch('toast', message: 'ลบความคิดเห็นเรียบร้อย', type: 'success');
+        }
+    }
+
+    public function uploadAttachments()
+    {
+        $this->validate([
+            'uploadFiles.*' => 'file|max:10240',
+        ]);
+
+        foreach ($this->uploadFiles as $file) {
+            $path = $file->store('attachments', 'public');
+            $this->task->attachments()->create([
+                'user_id' => auth()->id(),
+                'type' => 'file',
+                'file_name' => $file->getClientOriginalName(),
+                'file_path' => $path,
+                'file_size' => $file->getSize(),
+            ]);
+        }
+
+        $this->uploadFiles = [];
+        $this->task->refresh();
+        $this->dispatch('toast', message: 'อัปโหลดไฟล์สำเร็จ', type: 'success');
+    }
+
+    public function deleteAttachment($attachmentId)
+    {
+        $attachment = Attachment::find($attachmentId);
+        if ($attachment && $attachment->task_id === $this->task->id) {
+            if ($attachment->isFile() && $attachment->file_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($attachment->file_path);
+            }
+            $attachment->delete();
+            $this->task->refresh();
+            $this->dispatch('toast', message: 'ลบไฟล์สำเร็จ', type: 'success');
+        }
     }
 
     public function addLinkAttachment()
