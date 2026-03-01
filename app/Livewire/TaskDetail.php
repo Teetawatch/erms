@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Attachment;
 use App\Models\Task;
 use App\Models\TaskDependency;
 use App\Models\TaskUpdate;
@@ -22,6 +23,11 @@ class TaskDetail extends Component
     // Quick edit
     public $editingProgress = false;
     public $progress = 0;
+
+    // Link attachment form
+    public $showLinkForm = false;
+    public $linkName = '';
+    public $linkUrl = '';
 
     protected $listeners = ['refreshTask' => '$refresh'];
 
@@ -125,6 +131,45 @@ class TaskDetail extends Component
         ]);
 
         $this->task->refresh();
+    }
+
+    public function addLinkAttachment()
+    {
+        $this->validate([
+            'linkName' => 'required|string|max:255',
+            'linkUrl' => 'required|url|max:2000',
+        ], [
+            'linkName.required' => 'กรุณากรอกชื่อลิงก์',
+            'linkUrl.required' => 'กรุณากรอก URL',
+            'linkUrl.url' => 'รูปแบบ URL ไม่ถูกต้อง',
+        ]);
+
+        Attachment::create([
+            'task_id' => $this->task->id,
+            'user_id' => auth()->id(),
+            'type' => 'link',
+            'file_name' => $this->linkName,
+            'file_path' => '',
+            'file_size' => 0,
+            'external_url' => $this->linkUrl,
+        ]);
+
+        $this->linkName = '';
+        $this->linkUrl = '';
+        $this->showLinkForm = false;
+        $this->task->refresh();
+
+        $this->dispatch('toast', message: 'เพิ่มลิงก์สำเร็จ', type: 'success');
+    }
+
+    public function deleteLinkAttachment($attachmentId)
+    {
+        $attachment = Attachment::find($attachmentId);
+        if ($attachment && $attachment->task_id === $this->task->id && $attachment->isLink()) {
+            $attachment->delete();
+            $this->task->refresh();
+            $this->dispatch('toast', message: 'ลบลิงก์สำเร็จ', type: 'success');
+        }
     }
 
     public function getAvailableTasksProperty()

@@ -10,7 +10,22 @@ class Attachment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['task_id', 'user_id', 'file_name', 'file_path', 'file_size'];
+    protected $fillable = ['task_id', 'user_id', 'type', 'file_name', 'file_path', 'file_size', 'external_url'];
+
+    public function isLink(): bool
+    {
+        return $this->type === 'link';
+    }
+
+    public function isFile(): bool
+    {
+        return $this->type === 'file';
+    }
+
+    public function getDisplayUrl(): string
+    {
+        return $this->isLink() ? $this->external_url : route('attachments.download', $this);
+    }
 
     public function task(): BelongsTo
     {

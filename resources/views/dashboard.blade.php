@@ -3,7 +3,7 @@
 
     {{-- ═══ Welcome Banner ═══ --}}
     <div class="mb-6">
-        <h2 class="text-lg font-semibold text-erms-text">สวัสดี {{ auth()->user()->name }} 👋</h2>
+        <h2 class="text-lg font-semibold text-erms-text">สวัสดี {{ auth()->user()->name }}</h2>
         <p class="text-[13px] text-erms-text-secondary mt-0.5">นี่คือภาพรวมงานของคุณวันนี้</p>
     </div>
 

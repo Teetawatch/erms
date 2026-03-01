@@ -250,44 +250,101 @@
             {{-- ═══ Attachments ═══ --}}
             <div>
                 <h2 class="text-[13px] font-semibold text-erms-text mb-3">
-                    ไฟล์แนบ
+                    ไฟล์แนบและลิงก์
                     @if($task->attachments->count())
                         <span class="text-2xs font-normal text-erms-muted">({{ $task->attachments->count() }})</span>
                     @endif
                 </h2>
+
+                {{-- Attachments List --}}
                 @if($task->attachments->count())
                     <div class="space-y-1.5 mb-3">
                         @foreach($task->attachments as $attachment)
                             <div class="flex items-center justify-between bg-erms-surface-2/60 rounded-lg px-3 py-2 group">
                                 <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="w-8 h-8 rounded-md bg-erms-blue-light flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                                    </div>
+                                    {{-- Icon based on type --}}
+                                    @if($attachment->isLink())
+                                        @php
+                                            $isGoogleDrive = str_contains($attachment->external_url ?? '', 'drive.google.com');
+                                            $iconBg = $isGoogleDrive ? 'bg-green-100' : 'bg-erms-purple-light';
+                                            $iconColor = $isGoogleDrive ? 'text-green-600' : 'text-erms-purple';
+                                        @endphp
+                                        <div class="w-8 h-8 rounded-md {{ $iconBg }} flex items-center justify-center flex-shrink-0">
+                                            @if($isGoogleDrive)
+                                                <svg class="w-4 h-4 {{ $iconColor }}" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 5.5 6.56-11.5L7.71 3.5zm2.86 5l-6.57 11.5h13.14L23.71 8.5H10.57zm6.86-5L12 12l6.57 11.5 3.43-6L17.43 3.5z"/></svg>
+                                            @else
+                                                <svg class="w-4 h-4 {{ $iconColor }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <div class="w-8 h-8 rounded-md bg-erms-blue-light flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                        </div>
+                                    @endif
                                     <div class="min-w-0">
-                                        <p class="text-[13px] font-medium truncate">{{ $attachment->file_name }}</p>
-                                        <p class="text-2xs text-erms-muted">{{ number_format($attachment->file_size / 1024, 1) }} KB · {{ $attachment->user->name }} · {{ $attachment->created_at->diffForHumans() }}</p>
+                                        @if($attachment->isLink())
+                                            <a href="{{ $attachment->external_url }}" target="_blank" rel="noopener" class="text-[13px] font-medium truncate block text-erms-blue hover:underline">{{ $attachment->file_name }}</a>
+                                            <p class="text-2xs text-erms-muted">ลิงก์ · {{ $attachment->user->name }} · {{ $attachment->created_at->diffForHumans() }}</p>
+                                        @else
+                                            <p class="text-[13px] font-medium truncate">{{ $attachment->file_name }}</p>
+                                            <p class="text-2xs text-erms-muted">{{ number_format($attachment->file_size / 1024, 1) }} KB · {{ $attachment->user->name }} · {{ $attachment->created_at->diffForHumans() }}</p>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                                    <a href="{{ route('attachments.download', $attachment) }}" class="btn-icon !w-7 !h-7" title="ดาวน์โหลด">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                    </a>
-                                    <form method="POST" action="{{ route('attachments.destroy', $attachment) }}" onsubmit="return confirm('ลบไฟล์นี้?')">
-                                        @csrf @method('DELETE')
-                                        <button class="btn-icon !w-7 !h-7 text-erms-red" title="ลบ">
+                                    @if($attachment->isLink())
+                                        <a href="{{ $attachment->external_url }}" target="_blank" rel="noopener" class="btn-icon !w-7 !h-7" title="เปิดลิงก์">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        </a>
+                                        <button wire:click="deleteLinkAttachment({{ $attachment->id }})" class="btn-icon !w-7 !h-7 text-erms-red" title="ลบ" onclick="return confirm('ลบลิงก์นี้?')">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                         </button>
-                                    </form>
+                                    @else
+                                        <a href="{{ route('attachments.download', $attachment) }}" class="btn-icon !w-7 !h-7" title="ดาวน์โหลด">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                        </a>
+                                        <form method="POST" action="{{ route('attachments.destroy', $attachment) }}" onsubmit="return confirm('ลบไฟล์นี้?')">
+                                            @csrf @method('DELETE')
+                                            <button class="btn-icon !w-7 !h-7 text-erms-red" title="ลบ">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @endif
-                <form action="{{ route('tasks.attachments.store', $task) }}" method="POST" enctype="multipart/form-data" class="flex gap-2">
+
+                {{-- Add File --}}
+                <form action="{{ route('tasks.attachments.store', $task) }}" method="POST" enctype="multipart/form-data" class="flex gap-2 mb-2">
                     @csrf
                     <input type="file" name="file" class="input-field flex-1 !text-[13px] !py-1.5 file:mr-3 file:py-0.5 file:px-2.5 file:rounded-md file:border-0 file:text-2xs file:bg-erms-blue-light file:text-erms-blue file:cursor-pointer file:font-medium" required>
                     <button type="submit" class="btn-secondary !text-xs !py-1.5">อัปโหลด</button>
                 </form>
+
+                {{-- Add Link (Google Drive, etc.) --}}
+                @if($showLinkForm)
+                    <div class="bg-erms-surface-2/60 rounded-lg p-3 space-y-2">
+                        <div class="flex items-center gap-2 text-[13px] font-medium text-erms-text mb-2">
+                            <svg class="w-4 h-4 text-erms-purple" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                            เพิ่มลิงก์ (Google Drive, URL อื่นๆ)
+                        </div>
+                        <input type="text" wire:model="linkName" placeholder="ชื่อลิงก์" class="input-field !text-[13px] !py-1.5 w-full" />
+                        @error('linkName') <p class="text-2xs text-erms-red">{{ $message }}</p> @enderror
+                        <input type="url" wire:model="linkUrl" placeholder="https://drive.google.com/..." class="input-field !text-[13px] !py-1.5 w-full" />
+                        @error('linkUrl') <p class="text-2xs text-erms-red">{{ $message }}</p> @enderror
+                        <div class="flex items-center gap-2 pt-1">
+                            <button wire:click="addLinkAttachment" class="btn-primary !text-xs !py-1.5">บันทึกลิงก์</button>
+                            <button wire:click="$set('showLinkForm', false)" class="btn-ghost !text-xs !py-1">ยกเลิก</button>
+                        </div>
+                    </div>
+                @else
+                    <button wire:click="$set('showLinkForm', true)" class="text-2xs text-erms-text-secondary hover:text-erms-blue transition flex items-center gap-1 mt-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        เพิ่มลิงก์ Google Drive / URL
+                    </button>
+                @endif
             </div>
         </div>
 
