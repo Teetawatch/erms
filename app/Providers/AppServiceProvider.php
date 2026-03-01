@@ -21,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Carbon::setLocale('th');
-        setlocale(LC_TIME, 'th_TH.UTF-8', 'th_TH', 'thai');
+        setlocale(LC_TIME, 'th_TH.UTF-8', 'th_TH', 'thai', 'Thai_Thailand.874');
+        date_default_timezone_set('Asia/Bangkok');
     }
 }

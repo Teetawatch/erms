@@ -237,6 +237,9 @@
                 </div>
             </div>
 
+            {{-- ═══════ QUICK CREATE TASK MODAL ═══════ --}}
+            <livewire:quick-create-task />
+
             {{-- ═══════ QUICK ADD FAB (Mobile) ═══════ --}}
             <button class="quick-add-fab sm:hidden" onclick="Livewire.dispatch('open-quick-create')" aria-label="สร้างงานใหม่">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
