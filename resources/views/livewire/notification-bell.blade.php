@@ -36,9 +36,8 @@
                     ];
                     $iconData = $iconMap[$type] ?? ['icon' => 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9', 'color' => 'text-erms-muted'];
                 @endphp
-                <a href="{{ $taskId ? route('tasks.show', $taskId) : '#' }}"
-                   wire:click="markAsRead('{{ $notification->id }}')"
-                   class="flex items-start gap-3 px-4 py-3 border-b border-erms-border-light/50 hover:bg-erms-surface-2 transition {{ is_null($notification->read_at) ? 'bg-erms-blue/5' : '' }}">
+                <button wire:click="markAndNavigate('{{ $notification->id }}', '{{ $taskId ? route('tasks.show', $taskId) : route('dashboard') }}')"
+                   class="flex items-start gap-3 px-4 py-3 border-b border-erms-border-light/50 hover:bg-erms-surface-2 transition w-full text-left {{ is_null($notification->read_at) ? 'bg-erms-blue/5' : '' }}">
                     <div class="flex-shrink-0 mt-0.5">
                         <svg class="w-4 h-4 {{ $iconData['color'] }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $iconData['icon'] }}"/></svg>
                     </div>
@@ -49,7 +48,7 @@
                     @if(is_null($notification->read_at))
                         <span class="w-2 h-2 rounded-full bg-erms-blue flex-shrink-0 mt-1.5"></span>
                     @endif
-                </a>
+                </button>
             @empty
                 <div class="px-4 py-10 text-center">
                     <svg class="w-8 h-8 mx-auto text-erms-muted/40 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>

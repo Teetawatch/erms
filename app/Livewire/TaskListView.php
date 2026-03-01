@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
+use App\Notifications\TaskStatusChanged;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -103,6 +104,10 @@ class TaskListView extends Component
             'new_status' => $status,
             'note' => null,
         ]);
+
+        if ($oldStatus !== $status && $task->assigned_to && $task->assigned_to !== auth()->id()) {
+            $task->assignee?->notify(new TaskStatusChanged($task, $oldStatus, $status, auth()->user()->name));
+        }
     }
 
     public function render()

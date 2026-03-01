@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\TaskUpdate;
 use App\Models\User;
+use App\Notifications\TaskAssigned;
 use Livewire\Component;
 
 class QuickCreateTask extends Component
@@ -63,6 +64,11 @@ class QuickCreateTask extends Component
             'new_status' => 'todo',
             'note' => 'สร้างงานใหม่',
         ]);
+
+        // Notify assigned user
+        if ($task->assigned_to && $task->assigned_to !== auth()->id()) {
+            User::find($task->assigned_to)?->notify(new TaskAssigned($task));
+        }
 
         $this->showModal = false;
         $this->resetForm();

@@ -20,6 +20,7 @@ class AttachmentController extends Controller
 
         $task->attachments()->create([
             'user_id' => $request->user()->id,
+            'type' => 'file',
             'file_name' => $file->getClientOriginalName(),
             'file_path' => $path,
             'file_size' => $file->getSize(),

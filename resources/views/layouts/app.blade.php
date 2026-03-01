@@ -247,6 +247,42 @@
             <button class="quick-add-fab sm:hidden" onclick="Livewire.dispatch('open-quick-create')" aria-label="สร้างงานใหม่">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             </button>
+
+            {{-- ═══════ TOAST NOTIFICATIONS ═══════ --}}
+            <div x-data="toastManager()" @toast.window="addToast($event.detail)"
+                 class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none">
+                <template x-for="toast in toasts" :key="toast.id">
+                    <div x-show="toast.show"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                         class="pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-asana-lg border max-w-sm"
+                         :class="{
+                             'bg-white border-erms-green/30': toast.type === 'success',
+                             'bg-white border-erms-red/30': toast.type === 'error',
+                             'bg-white border-erms-blue/30': toast.type === 'info',
+                         }">
+                        <div class="flex-shrink-0">
+                            <template x-if="toast.type === 'success'">
+                                <svg class="w-5 h-5 text-erms-green" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </template>
+                            <template x-if="toast.type === 'error'">
+                                <svg class="w-5 h-5 text-erms-red" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </template>
+                            <template x-if="toast.type === 'info'">
+                                <svg class="w-5 h-5 text-erms-blue" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </template>
+                        </div>
+                        <p class="text-[13px] font-medium text-erms-text" x-text="toast.message"></p>
+                        <button @click="removeToast(toast.id)" class="ml-auto text-erms-muted hover:text-erms-text transition flex-shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </template>
+            </div>
         </div>
 
         @livewireScripts
@@ -266,6 +302,53 @@
                             e.preventDefault();
                             Livewire.dispatch('open-quick-create');
                         }
+                    }
+                }
+            }
+
+            // Search keyboard navigation
+            function searchKeyboard(urls) {
+                return {
+                    activeIndex: -1,
+                    urls: urls,
+                    moveDown() {
+                        if (this.urls.length === 0) return;
+                        this.activeIndex = (this.activeIndex + 1) % this.urls.length;
+                        this.scrollToActive();
+                    },
+                    moveUp() {
+                        if (this.urls.length === 0) return;
+                        this.activeIndex = this.activeIndex <= 0 ? this.urls.length - 1 : this.activeIndex - 1;
+                        this.scrollToActive();
+                    },
+                    go() {
+                        if (this.activeIndex >= 0 && this.urls[this.activeIndex]) {
+                            $wire.navigateTo(this.urls[this.activeIndex]);
+                        }
+                    },
+                    scrollToActive() {
+                        this.$nextTick(() => {
+                            const el = this.$refs.resultsList?.querySelector(`[data-search-idx="${this.activeIndex}"]`);
+                            if (el) el.scrollIntoView({ block: 'nearest' });
+                        });
+                    }
+                }
+            }
+
+            // Toast notification manager
+            function toastManager() {
+                return {
+                    toasts: [],
+                    nextId: 0,
+                    addToast(detail) {
+                        const id = this.nextId++;
+                        this.toasts.push({ id, message: detail.message, type: detail.type || 'info', show: true });
+                        setTimeout(() => this.removeToast(id), 4000);
+                    },
+                    removeToast(id) {
+                        const toast = this.toasts.find(t => t.id === id);
+                        if (toast) toast.show = false;
+                        setTimeout(() => { this.toasts = this.toasts.filter(t => t.id !== id); }, 300);
                     }
                 }
             }

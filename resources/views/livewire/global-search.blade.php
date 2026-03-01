@@ -1,6 +1,13 @@
 <div>
     @if($showModal)
-        <div class="modal-overlay" x-data x-trap.noscroll="true" @click.self="$wire.set('showModal', false)" @keydown.escape.window="$wire.set('showModal', false)">
+        <div class="modal-overlay"
+             x-data="searchKeyboard(@js(collect($results)->values()->pluck('url')->toArray()))"
+             x-trap.noscroll="true"
+             @click.self="$wire.set('showModal', false)"
+             @keydown.escape.window="$wire.set('showModal', false)"
+             @keydown.arrow-down.prevent="moveDown()"
+             @keydown.arrow-up.prevent="moveUp()"
+             @keydown.enter.prevent="go()">
             <div class="w-full max-w-lg mx-auto mt-[15vh]" @click.stop>
                 {{-- Search Input --}}
                 <div class="bg-white rounded-xl shadow-asana-lg border border-erms-border overflow-hidden">
@@ -13,18 +20,14 @@
                     </div>
 
                     {{-- Results --}}
-                    <div class="max-h-[50vh] overflow-y-auto">
+                    <div class="max-h-[50vh] overflow-y-auto" x-ref="resultsList">
                         @if(strlen($query) >= 2)
                             @if(count($results) > 0)
                                 @php
                                     $grouped = collect($results)->groupBy('type');
                                     $typeLabels = ['task' => 'งาน', 'project' => 'โครงการ', 'user' => 'ผู้ใช้'];
-                                    $typeIcons = [
-                                        'task' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-                                        'project' => 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z',
-                                        'user' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
-                                    ];
                                     $statusColors = ['todo' => '#9ca0a4', 'in_progress' => '#4573d2', 'review' => '#7c5cfc', 'done' => '#5da283', 'planning' => '#f8b400'];
+                                    $flatIndex = 0;
                                 @endphp
                                 @foreach($grouped as $type => $items)
                                     <div class="px-3 pt-3 pb-1">
@@ -32,18 +35,18 @@
                                     </div>
                                     @foreach($items as $item)
                                         <button wire:click="navigateTo('{{ $item['url'] }}')"
+                                                data-search-idx="{{ $flatIndex }}"
+                                                :class="activeIndex === {{ $flatIndex }} ? 'bg-erms-surface-2' : ''"
                                                 class="flex items-center gap-3 w-full px-4 py-2.5 text-left hover:bg-erms-surface-2 transition cursor-pointer group">
                                             <div class="flex-shrink-0">
-                                                @if($type === 'task' && isset($item['status']))
-                                                    <span class="w-3 h-3 rounded-full block" style="background-color: {{ $statusColors[$item['status']] ?? '#9ca0a4' }}"></span>
-                                                @elseif($type === 'project' && isset($item['status']))
+                                                @if(in_array($type, ['task', 'project']) && isset($item['status']))
                                                     <span class="w-3 h-3 rounded-full block" style="background-color: {{ $statusColors[$item['status']] ?? '#9ca0a4' }}"></span>
                                                 @else
-                                                    <svg class="w-4 h-4 text-erms-muted" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $typeIcons[$type] ?? $typeIcons['task'] }}"/></svg>
+                                                    <svg class="w-4 h-4 text-erms-muted" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                                 @endif
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-[13px] font-medium text-erms-text truncate group-hover:text-erms-blue transition">{{ $item['title'] }}</p>
+                                                <p class="text-[13px] font-medium text-erms-text truncate group-hover:text-erms-blue transition" :class="activeIndex === {{ $flatIndex }} ? 'text-erms-blue' : ''">{{ $item['title'] }}</p>
                                                 @if(!empty($item['subtitle']))
                                                     <p class="text-2xs text-erms-muted truncate">{{ $item['subtitle'] }}</p>
                                                 @endif
@@ -51,8 +54,9 @@
                                             @if($type === 'task' && isset($item['priority']))
                                                 <span class="badge-{{ $item['priority'] }} flex-shrink-0">{{ $item['priority'] }}</span>
                                             @endif
-                                            <svg class="w-4 h-4 text-erms-muted opacity-0 group-hover:opacity-100 transition flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                            <svg class="w-4 h-4 text-erms-muted opacity-0 group-hover:opacity-100 transition flex-shrink-0" :class="activeIndex === {{ $flatIndex }} ? '!opacity-100' : ''" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                                         </button>
+                                        @php $flatIndex++; @endphp
                                     @endforeach
                                 @endforeach
                             @else

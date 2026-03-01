@@ -62,12 +62,13 @@ class GlobalSearch extends Component
             ]);
 
         // Search projects
-        $projectQuery = Project::where('name', 'like', $search)
-            ->orWhere('description', 'like', $search);
+        $projectQuery = Project::where(function ($q) use ($search) {
+            $q->where('name', 'like', $search)
+              ->orWhere('description', 'like', $search);
+        });
 
         if (!$isAdmin) {
-            $projectQuery = Project::where('name', 'like', $search)
-                ->whereIn('id', $user->projects()->pluck('projects.id'));
+            $projectQuery->whereIn('id', $user->projects()->pluck('projects.id'));
         }
 
         $projects = $projectQuery->select('id', 'name', 'status')

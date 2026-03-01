@@ -26,6 +26,15 @@ class NotificationBell extends Component
         }
     }
 
+    public function markAndNavigate($id, $url)
+    {
+        $notification = auth()->user()->notifications()->find($id);
+        if ($notification) {
+            $notification->markAsRead();
+        }
+        return $this->redirect($url, navigate: true);
+    }
+
     public function markAllAsRead()
     {
         auth()->user()->unreadNotifications->markAsRead();
