@@ -50,6 +50,42 @@ class ProjectController extends Controller
             $project->members()->sync($validated['members']);
         }
 
+        // Clone tasks from template project
+        if ($request->filled('template_id')) {
+            $template = Project::with(['tasks' => fn($q) => $q->whereNull('parent_id'), 'tasks.subtasks', 'customFields'])->find($request->template_id);
+            if ($template) {
+                foreach ($template->tasks as $task) {
+                    $newTask = $project->tasks()->create([
+                        'title' => $task->title,
+                        'description' => $task->description,
+                        'status' => 'todo',
+                        'priority' => $task->priority,
+                        'estimated_hours' => $task->estimated_hours,
+                        'tags' => $task->tags,
+                        'sort_order' => $task->sort_order,
+                    ]);
+                    foreach ($task->subtasks as $sub) {
+                        $project->tasks()->create([
+                            'parent_id' => $newTask->id,
+                            'title' => $sub->title,
+                            'status' => 'todo',
+                            'priority' => $sub->priority,
+                            'sort_order' => $sub->sort_order,
+                        ]);
+                    }
+                }
+                foreach ($template->customFields as $field) {
+                    $project->customFields()->create([
+                        'name' => $field->name,
+                        'type' => $field->type,
+                        'options' => $field->options,
+                        'is_required' => $field->is_required,
+                        'sort_order' => $field->sort_order,
+                    ]);
+                }
+            }
+        }
+
         return redirect()->route('projects.show', $project)->with('success', 'สร้างโครงการเรียบร้อย');
     }
 
