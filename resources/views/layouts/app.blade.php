@@ -359,7 +359,7 @@
                     showSuggestions: false,
                     suggestions: [],
                     highlightedIndex: 0,
-                    allUsers: @json(\App\Models\User::select('id', 'name', 'avatar')->get()->map(fn($u) => ['id' => $u->id, 'name' => $u->name, 'avatar' => $u->avatar_url])),
+                    allUsers: {!! \App\Models\User::select('id', 'name', 'avatar')->get()->map(fn($u) => ['id' => $u->id, 'name' => $u->name, 'avatar' => $u->avatar_url])->toJson() !!},
 
                     onInput(e) {
                         const val = e.target.value;
