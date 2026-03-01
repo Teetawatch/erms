@@ -1,4 +1,24 @@
 <div>
+    {{-- ═══ Bulk Actions Bar (shown when tasks selected) ═══ --}}
+    @if(count($selectedTasks) > 0)
+        <div class="bg-erms-blue/5 border border-erms-blue/20 rounded-lg px-4 py-2 mb-3 flex items-center gap-3">
+            <span class="text-sm text-erms-blue font-medium">เลือกแล้ว {{ count($selectedTasks) }} รายการ</span>
+            <select wire:model.live="bulkStatus" class="input-field !w-auto !py-1 !text-xs !pr-8">
+                <option value="">เปลี่ยนสถานะ...</option>
+                <option value="todo">รอดำเนินการ</option>
+                <option value="in_progress">กำลังดำเนินการ</option>
+                <option value="review">ตรวจสอบ</option>
+                <option value="done">เสร็จสิ้น</option>
+            </select>
+            <button wire:click="bulkStatusChange" wire:disabled="!$bulkStatus" class="btn-primary !text-xs !py-1">
+                ใช้
+            </button>
+            <button wire:click="$set('selectedTasks', [])" class="btn-ghost !text-xs !py-1">
+                ยกเลิก
+            </button>
+        </div>
+    @endif
+
     {{-- ═══ Filter Bar (Asana-style inline) ═══ --}}
     <div class="flex flex-wrap items-center gap-2 mb-3">
         <div class="relative flex-1 min-w-[180px] max-w-xs">
@@ -37,6 +57,9 @@
     <div class="card overflow-hidden">
         {{-- Column Headers --}}
         <div class="flex items-center border-b border-erms-border bg-erms-surface-2/60 text-[11px] font-semibold text-erms-muted uppercase tracking-wider select-none">
+            <div class="w-8 px-3 py-2.5">
+                <input type="checkbox" wire:model.live="selectAll" class="rounded border-erms-border text-erms-blue focus:ring-erms-blue/20">
+            </div>
             <div class="flex-1 min-w-0 px-4 py-2.5">
                 <button wire:click="sort('title')" class="flex items-center gap-1 hover:text-erms-text cursor-pointer transition">
                     ชื่องาน {!! $sortArrow('title') !!}
@@ -64,6 +87,11 @@
         <div class="divide-y divide-erms-border-light">
             @forelse($this->tasks as $task)
                 <div class="task-row group" wire:key="task-row-{{ $task->id }}">
+                    {{-- Selection Checkbox --}}
+                    <div class="w-8 px-3 py-2.5">
+                        <input type="checkbox" wire:model.live="selectedTasks" value="{{ $task->id }}" class="rounded border-erms-border text-erms-blue focus:ring-erms-blue/20">
+                    </div>
+                    
                     {{-- Task Name with Checkbox --}}
                     <div class="flex-1 min-w-0 flex items-center gap-3 pr-3">
                         <button wire:click="quickStatusChange({{ $task->id }}, '{{ $task->status === 'done' ? 'todo' : 'done' }}')"
@@ -95,7 +123,12 @@
                     {{-- Due Date --}}
                     <div class="w-28 px-3 hidden sm:flex items-center">
                         @if($task->due_date)
-                            <span class="text-2xs {{ $task->due_date->isPast() && $task->status !== 'done' ? 'text-erms-red font-medium' : 'text-erms-muted' }}">
+                            @php
+                                $isOverdue = $task->due_date->isPast() && $task->status !== 'done';
+                                $isDueSoon = !$isOverdue && $task->status !== 'done' && $task->due_date->diffInDays(now()) <= 2;
+                                $dueDateClass = $isOverdue ? 'text-erms-red font-medium' : ($isDueSoon ? 'text-erms-orange font-medium' : 'text-erms-muted');
+                            @endphp
+                            <span class="text-2xs {{ $dueDateClass }}" title="{{ $isOverdue ? 'เลยกำหนด' : ($isDueSoon ? 'ใกล้ถึงกำหนด' : '') }}">
                                 {{ $task->due_date->translatedFormat('d M Y') }}
                             </span>
                         @else

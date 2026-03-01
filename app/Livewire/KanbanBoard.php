@@ -41,7 +41,7 @@ class KanbanBoard extends Component
     public function getTasksProperty()
     {
         $user = auth()->user();
-        $query = Task::with(['assignee', 'project', 'subtasks'])
+        $query = Task::with(['assignee', 'project', 'subtasks', 'dependencies.dependsOnTask'])
             ->whereNull('parent_id');
 
         if ($this->projectId) {

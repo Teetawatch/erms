@@ -133,7 +133,10 @@
                 {{-- Task Cards Container --}}
                 <div class="kanban-column space-y-2 min-h-[120px] rounded-lg p-1.5 bg-erms-surface-2/50" data-status="{{ $status }}">
                     @foreach(($this->tasks[$status] ?? collect()) as $task)
-                        <div class="kanban-card group" data-task-id="{{ $task->id }}">
+                        @php
+                            $priorityColors = ['urgent' => 'border-l-erms-red', 'high' => 'border-l-erms-orange', 'medium' => 'border-l-erms-yellow', 'low' => 'border-l-erms-green'];
+                        @endphp
+                        <div class="kanban-card group border-l-[3px] {{ $priorityColors[$task->priority] ?? '' }}" data-task-id="{{ $task->id }}">
                             {{-- Card Top: Title + Priority --}}
                             <div class="flex items-start gap-2 mb-1.5">
                                 <button wire:click="$dispatch('open-task-panel', { taskId: {{ $task->id }} })"
@@ -153,6 +156,17 @@
                                 @if($task->project && !$projectId)
                                     <span class="text-2xs text-erms-muted bg-erms-surface-2 px-1.5 py-0.5 rounded">{{ $task->project->name }}</span>
                                 @endif
+                                @if($task->dependencies->count() > 0)
+                                    @php
+                                        $blocked = $task->dependencies->contains(fn($dep) => $dep->dependsOnTask && $dep->dependsOnTask->status !== 'done');
+                                    @endphp
+                                    @if($blocked)
+                                        <span class="text-2xs text-erms-red bg-erms-red/10 px-1.5 py-0.5 rounded flex items-center gap-1" title="รองานอื่น">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            ถูกบล็อก
+                                        </span>
+                                    @endif
+                                @endif
                                 <span class="badge-{{ $task->priority }}">{{ $priorityLabels[$task->priority] ?? $task->priority }}</span>
                             </div>
 
@@ -170,9 +184,15 @@
                                     @endif
                                 </div>
                                 @if($task->due_date)
-                                    <span class="text-2xs flex items-center gap-1 {{ $task->due_date->isPast() && $task->status !== 'done' ? 'text-erms-red font-medium' : 'text-erms-muted' }}">
+                                    @php
+                                        $isOverdue = $task->due_date->isPast() && $task->status !== 'done';
+                                        $isDueSoon = !$isOverdue && $task->status !== 'done' && $task->due_date->diffInDays(now()) <= 2;
+                                        $dueDateClass = $isOverdue ? 'text-erms-red font-medium' : ($isDueSoon ? 'text-erms-orange font-medium' : 'text-erms-muted');
+                                    @endphp
+                                    <span class="text-2xs flex items-center gap-1 {{ $dueDateClass }}">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                         {{ $task->due_date->translatedFormat('d M') }}
+                                        @if($isOverdue) เลยกำหนด @elseif($isDueSoon) ใกล้ถึง @endif
                                     </span>
                                 @endif
                             </div>
