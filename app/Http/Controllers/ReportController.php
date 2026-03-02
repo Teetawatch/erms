@@ -36,12 +36,9 @@ class ReportController extends Controller
         // Overview stats
         $user = auth()->user();
         $isAdmin = $user->hasRole('admin');
+        $isManager = $user->hasRole('manager');
 
-        $allTasks = Task::whereNull('parent_id');
-        if (!$isAdmin) {
-            $allTasks->where('assigned_to', $user->id);
-        }
-        $allTasks = $allTasks->get();
+        $allTasks = Task::whereNull('parent_id')->visibleTo($user)->get();
 
         $overview = [
             'total' => $allTasks->count(),
@@ -61,6 +58,7 @@ class ReportController extends Controller
 
         // Project health
         $projectQuery = $isAdmin ? Project::query() : $user->projects();
+        // Manager can also see their project health (already covered by $user->projects())
         $projectsHealth = $projectQuery->withCount([
             'tasks',
             'tasks as done_tasks_count' => fn($q) => $q->where('status', 'done'),
@@ -76,10 +74,18 @@ class ReportController extends Controller
             'health' => $p->overdue_tasks_count > 2 ? 'at_risk' : ($p->overdue_tasks_count > 0 ? 'needs_attention' : 'on_track'),
         ]);
 
-        // Team workload (admin only)
+        // Team workload (admin/manager)
         $teamWorkload = collect();
         if ($isAdmin) {
             $teamWorkload = User::withCount([
+                'assignedTasks as active_tasks' => fn($q) => $q->whereIn('status', ['todo', 'in_progress', 'review']),
+                'assignedTasks as done_tasks' => fn($q) => $q->where('status', 'done'),
+                'assignedTasks as overdue_tasks' => fn($q) => $q->where('status', '!=', 'done')->whereNotNull('due_date')->where('due_date', '<', now()),
+            ])->get();
+        } elseif ($isManager) {
+            $projectIds = $user->projects()->pluck('projects.id');
+            $teamUserIds = \DB::table('project_user')->whereIn('project_id', $projectIds)->pluck('user_id')->unique();
+            $teamWorkload = User::whereIn('id', $teamUserIds)->withCount([
                 'assignedTasks as active_tasks' => fn($q) => $q->whereIn('status', ['todo', 'in_progress', 'review']),
                 'assignedTasks as done_tasks' => fn($q) => $q->where('status', 'done'),
                 'assignedTasks as overdue_tasks' => fn($q) => $q->where('status', '!=', 'done')->whereNotNull('due_date')->where('due_date', '<', now()),

@@ -78,6 +78,23 @@ class Task extends Model
         return $this->hasMany(CustomFieldValue::class);
     }
 
+    public function scopeVisibleTo($query, User $user)
+    {
+        if ($user->hasRole('admin')) {
+            return $query;
+        }
+
+        if ($user->hasRole('manager')) {
+            $projectIds = $user->projects()->pluck('projects.id');
+            return $query->where(function ($q) use ($user, $projectIds) {
+                $q->whereIn('project_id', $projectIds)
+                  ->orWhere('assigned_to', $user->id);
+            });
+        }
+
+        return $query->where('assigned_to', $user->id);
+    }
+
     public function isBlocked(): bool
     {
         return $this->dependencies()

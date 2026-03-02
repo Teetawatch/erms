@@ -46,8 +46,8 @@ class KanbanBoard extends Component
 
         if ($this->projectId) {
             $query->where('project_id', $this->projectId);
-        } elseif (!$user->hasRole('admin')) {
-            $query->where('assigned_to', $user->id);
+        } else {
+            $query->visibleTo($user);
         }
 
         if ($this->filterPriority) {

@@ -34,18 +34,12 @@ class GlobalSearch extends Component
         $search = '%' . $this->query . '%';
 
         // Search tasks
-        $taskQuery = Task::where(function ($q) use ($search) {
+        $taskQuery = Task::visibleTo($user)
+            ->where(function ($q) use ($search) {
                 $q->where('title', 'like', $search)
                   ->orWhere('description', 'like', $search);
             })
             ->whereNull('parent_id');
-
-        if (!$isAdmin) {
-            $taskQuery->where(function ($q) use ($user) {
-                $q->where('assigned_to', $user->id)
-                  ->orWhereIn('project_id', $user->projects()->pluck('projects.id'));
-            });
-        }
 
         $tasks = $taskQuery->with('project')
             ->select('id', 'title', 'status', 'project_id', 'priority')

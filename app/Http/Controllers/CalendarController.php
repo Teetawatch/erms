@@ -16,9 +16,7 @@ class CalendarController extends Controller
     {
         $user = $request->user();
 
-        $tasks = $user->hasRole('admin')
-            ? Task::with('project', 'assignee')->whereNotNull('due_date')->get()
-            : $user->assignedTasks()->with('project')->whereNotNull('due_date')->get();
+        $tasks = Task::visibleTo($user)->with('project', 'assignee')->whereNotNull('due_date')->get();
 
         $events = $tasks->map(function ($task) {
             $colors = [

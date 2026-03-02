@@ -13,26 +13,19 @@ class DashboardController extends Controller
     {
         $user = $request->user();
         $isAdmin = $user->hasRole('admin');
+        $isManager = $user->hasRole('manager');
 
         $totalProjects = $isAdmin
             ? Project::count()
             : $user->projects()->count();
 
-        $tasksToday = $isAdmin
-            ? Task::whereDate('due_date', today())->count()
-            : $user->assignedTasks()->whereDate('due_date', today())->count();
+        $tasksToday = Task::visibleTo($user)->whereDate('due_date', today())->count();
 
-        $completedThisWeek = $isAdmin
-            ? Task::where('status', 'done')->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()])->count()
-            : $user->assignedTasks()->where('status', 'done')->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()])->count();
+        $completedThisWeek = Task::visibleTo($user)->where('status', 'done')->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()])->count();
 
-        $pendingReview = $isAdmin
-            ? Task::where('status', 'review')->count()
-            : $user->assignedTasks()->where('status', 'review')->count();
+        $pendingReview = Task::visibleTo($user)->where('status', 'review')->count();
 
-        $overdueTasks = $isAdmin
-            ? Task::where('status', '!=', 'done')->whereDate('due_date', '<', today())->count()
-            : $user->assignedTasks()->where('status', '!=', 'done')->whereDate('due_date', '<', today())->count();
+        $overdueTasks = Task::visibleTo($user)->where('status', '!=', 'done')->whereDate('due_date', '<', today())->count();
 
         $myTasks = $user->assignedTasks()
             ->with('project')
@@ -42,18 +35,29 @@ class DashboardController extends Controller
             ->get();
 
         // Status breakdown for chart
-        $statusQuery = $isAdmin ? Task::query() : $user->assignedTasks();
         $statusBreakdown = [
-            'todo' => (clone $statusQuery)->where('status', 'todo')->count(),
-            'in_progress' => (clone $statusQuery)->where('status', 'in_progress')->count(),
-            'review' => (clone $statusQuery)->where('status', 'review')->count(),
-            'done' => (clone $statusQuery)->where('status', 'done')->count(),
+            'todo' => Task::visibleTo($user)->where('status', 'todo')->count(),
+            'in_progress' => Task::visibleTo($user)->where('status', 'in_progress')->count(),
+            'review' => Task::visibleTo($user)->where('status', 'review')->count(),
+            'done' => Task::visibleTo($user)->where('status', 'done')->count(),
         ];
 
-        // Workload by user (admin only)
+        // Workload by user (admin/manager)
         $workloadData = [];
         if ($isAdmin) {
             $workloadData = User::withCount(['assignedTasks as open_tasks' => function ($q) {
+                $q->whereIn('status', ['todo', 'in_progress', 'review']);
+            }, 'assignedTasks as done_tasks' => function ($q) {
+                $q->where('status', 'done');
+            }, 'assignedTasks as total_tasks'])
+            ->has('assignedTasks')
+            ->take(10)
+            ->get();
+        } elseif ($isManager) {
+            $projectIds = $user->projects()->pluck('projects.id');
+            $teamUserIds = \DB::table('project_user')->whereIn('project_id', $projectIds)->pluck('user_id')->unique();
+            $workloadData = User::whereIn('id', $teamUserIds)
+            ->withCount(['assignedTasks as open_tasks' => function ($q) {
                 $q->whereIn('status', ['todo', 'in_progress', 'review']);
             }, 'assignedTasks as done_tasks' => function ($q) {
                 $q->where('status', 'done');
