@@ -32,7 +32,7 @@
                     @endforeach
                 </select>
             </div>
-            <div>
+            <div>   
                 <label class="block text-sm text-erms-muted mb-1">บทบาท *</label>
                 <select name="role" class="input-field" required>
                     @foreach($roles as $role)
