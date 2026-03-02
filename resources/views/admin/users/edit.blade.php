@@ -24,7 +24,7 @@
                 <input type="password" name="password_confirmation" class="input-field">
             </div>
             <div>
-                <label class="block text-sm text-erms-muted mb-1">แผนก</label>
+                <label class="block text-sm text-erms-muted mb-1">ฝ่าย</label>
                 <select name="department_id" class="input-field">
                     <option value="">ไม่ระบุ</option>
                     @foreach($departments as $dept)

@@ -22,7 +22,7 @@
                 <tr class="border-b border-erms-border bg-erms-surface-2">
                     <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase">ชื่อ</th>
                     <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase">อีเมล</th>
-                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase">แผนก</th>
+                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase">ฝ่าย</th>
                     <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase">บทบาท</th>
                     <th class="text-right px-5 py-3 text-xs font-medium text-erms-muted uppercase">จัดการ</th>
                 </tr>

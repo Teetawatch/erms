@@ -16,15 +16,15 @@
             </div>
             <div>
                 <label class="block text-sm text-erms-muted mb-1">รหัสผ่าน *</label>
-                <input type="password" name="password" class="input-field" required>
+                <input type="password" name="password" class="input-field" required minlength="5">
                 @error('password') <p class="text-xs text-erms-red mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="block text-sm text-erms-muted mb-1">ยืนยันรหัสผ่าน *</label>
-                <input type="password" name="password_confirmation" class="input-field" required>
+                <input type="password" name="password_confirmation" class="input-field" required minlength="5">
             </div>
             <div>
-                <label class="block text-sm text-erms-muted mb-1">แผนก</label>
+                <label class="block text-sm text-erms-muted mb-1">ฝ่าย</label>
                 <select name="department_id" class="input-field">
                     <option value="">ไม่ระบุ</option>
                     @foreach($departments as $dept)
