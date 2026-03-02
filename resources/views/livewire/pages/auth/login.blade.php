@@ -27,8 +27,8 @@ new #[Layout('layouts.guest')] class extends Component
 <div x-data="{ showPassword: false }">
     <!-- Header -->
     <div class="text-center mb-6">
-        <h1 class="text-xl font-bold text-erms-text tracking-tight">ยินดีต้อนรับกลับ</h1>
-        <p class="text-sm text-erms-muted mt-1">เข้าสู่ระบบเพื่อจัดการงานของคุณ</p>
+        <h1 class="auth-text text-xl font-bold text-gray-800 tracking-tight">ยินดีต้อนรับกลับ</h1>
+        <p class="auth-text text-sm text-gray-600 mt-1">เข้าสู่ระบบเพื่อจัดการงานของคุณ</p>
     </div>
 
     <!-- Session Status -->
@@ -37,7 +37,7 @@ new #[Layout('layouts.guest')] class extends Component
     <form wire:submit="login" class="space-y-5">
         <!-- Email Address -->
         <div>
-            <label for="email" class="block text-sm font-medium text-erms-text mb-1.5">อีเมล</label>
+            <label for="email" class="auth-text block text-sm font-medium text-gray-700 mb-1.5">อีเมล</label>
             <div class="relative">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <svg class="w-[18px] h-[18px] text-erms-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@ new #[Layout('layouts.guest')] class extends Component
 
         <!-- Password -->
         <div>
-            <label for="password" class="block text-sm font-medium text-erms-text mb-1.5">รหัสผ่าน</label>
+            <label for="password" class="auth-text block text-sm font-medium text-gray-700 mb-1.5">รหัสผ่าน</label>
             <div class="relative">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <svg class="w-[18px] h-[18px] text-erms-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -87,11 +87,11 @@ new #[Layout('layouts.guest')] class extends Component
             <label for="remember" class="inline-flex items-center cursor-pointer group">
                 <input wire:model="form.remember" id="remember" type="checkbox" name="remember"
                     class="w-4 h-4 rounded border-erms-border bg-white/80 text-erms-blue focus:ring-2 focus:ring-erms-blue/20 transition-colors duration-150 cursor-pointer" />
-                <span class="ms-2 text-sm text-erms-text-secondary group-hover:text-erms-text transition-colors duration-150">จดจำฉัน</span>
+                <span class="auth-text ms-2 text-sm text-gray-600 group-hover:text-gray-800 transition-colors duration-150">จดจำฉัน</span>
             </label>
 
             @if (Route::has('password.request'))
-                <a class="text-sm text-erms-blue/80 hover:text-erms-blue transition-colors duration-150 cursor-pointer" href="{{ route('password.request') }}" wire:navigate>
+                <a class="auth-text text-sm text-erms-blue/80 hover:text-erms-blue transition-colors duration-150 cursor-pointer" href="{{ route('password.request') }}" wire:navigate>
                     ลืมรหัสผ่าน?
                 </a>
             @endif
@@ -103,13 +103,13 @@ new #[Layout('layouts.guest')] class extends Component
             style="background: linear-gradient(135deg, #4573d2 0%, #7c5cfc 100%);"
             onmouseover="this.style.boxShadow='0 4px 20px rgba(69,115,210,0.4)'"
             onmouseout="this.style.boxShadow='none'">
-            <span wire:loading.remove wire:target="login">เข้าสู่ระบบ</span>
+            <span wire:loading.remove wire:target="login" class="auth-text">เข้าสู่ระบบ</span>
             <span wire:loading wire:target="login" class="flex items-center gap-2">
                 <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                 </svg>
-                กำลังเข้าสู่ระบบ...
+                <span class="auth-text">กำลังเข้าสู่ระบบ...</span>
             </span>
         </button>
     </form>

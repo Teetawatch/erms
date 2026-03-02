@@ -16,8 +16,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
+            /* Light theme and Kanit font for login page */
             .auth-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
                 position: relative;
                 overflow: hidden;
             }
@@ -26,9 +27,9 @@
                 position: absolute;
                 inset: 0;
                 background:
-                    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(79, 142, 247, 0.3), transparent),
-                    radial-gradient(ellipse 60% 60% at 80% 20%, rgba(124, 92, 252, 0.25), transparent),
-                    radial-gradient(ellipse 50% 70% at 60% 80%, rgba(69, 115, 210, 0.2), transparent);
+                    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(79, 142, 247, 0.15), transparent),
+                    radial-gradient(ellipse 60% 60% at 80% 20%, rgba(124, 92, 252, 0.12), transparent),
+                    radial-gradient(ellipse 50% 70% at 60% 80%, rgba(69, 115, 210, 0.1), transparent);
                 pointer-events: none;
             }
             .auth-orb {
@@ -49,24 +50,25 @@
                 66% { transform: translate(-20px, 20px) scale(0.95); }
             }
             .glass-card {
-                background: rgba(255, 255, 255, 0.88);
+                background: rgba(255, 255, 255, 0.95);
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 255, 255, 0.5);
+                border: 1px solid rgba(255, 255, 255, 0.8);
                 box-shadow:
-                    0 8px 32px rgba(0, 0, 0, 0.1),
-                    0 1px 2px rgba(0, 0, 0, 0.06),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+                    0 8px 32px rgba(0, 0, 0, 0.08),
+                    0 1px 2px rgba(0, 0, 0, 0.04),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.9);
             }
             .grid-pattern {
                 position: absolute;
                 inset: 0;
                 background-image:
-                    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
                 background-size: 60px 60px;
                 pointer-events: none;
             }
+            .auth-text { font-family: 'Kanit', sans-serif; }
         </style>
     </head>
     <body class="font-sans antialiased text-erms-text">
@@ -81,14 +83,14 @@
 
             <!-- Branding -->
             <div class="relative z-10 flex items-center gap-3 mb-8 animate-fade-in-up">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg" style="background: linear-gradient(135deg, #fff 0%, #e8edfb 100%);">
-                    <svg class="w-7 h-7 text-erms-blue" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg" style="background: linear-gradient(135deg, #4573d2 0%, #7c5cfc 100%);">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
                 </div>
                 <div>
-                    <span class="font-heading font-bold text-2xl text-white tracking-tight">ERMS</span>
-                    <p class="text-xs text-white/60 -mt-0.5">ระบบจัดการงานองค์กร</p>
+                    <span class="auth-text font-bold text-2xl text-gray-800 tracking-tight">ERMS</span>
+                    <p class="auth-text text-xs text-gray-600 -mt-0.5">ระบบจัดการงานองค์กร</p>
                 </div>
             </div>
 
@@ -98,7 +100,7 @@
             </div>
 
             <!-- Footer -->
-            <p class="relative z-10 mt-8 text-xs text-white/40 animate-fade-in-up" style="animation-delay: 160ms;">
+            <p class="relative z-10 mt-8 text-xs text-gray-500 animate-fade-in-up" style="animation-delay: 160ms;">
                 &copy; {{ date('Y') }} ERMS &middot; Enterprise Resource Management System
             </p>
         </div>
