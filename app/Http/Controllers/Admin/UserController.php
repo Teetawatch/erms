@@ -7,7 +7,6 @@ use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -30,7 +29,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => 'required|string|min:5|confirmed',
             'department_id' => 'nullable|exists:departments,id',
             'role' => 'required|exists:roles,name',
         ]);
@@ -60,7 +59,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'password' => 'nullable|string|min:5|confirmed',
             'department_id' => 'nullable|exists:departments,id',
             'role' => 'required|exists:roles,name',
         ]);
