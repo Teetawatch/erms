@@ -78,6 +78,11 @@ class Task extends Model
         return $this->hasMany(CustomFieldValue::class);
     }
 
+    public function timeEntries(): HasMany
+    {
+        return $this->hasMany(TimeEntry::class);
+    }
+
     public function scopeVisibleTo($query, User $user)
     {
         if ($user->hasRole('admin')) {

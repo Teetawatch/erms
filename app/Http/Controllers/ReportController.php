@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\TimeEntry;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -92,9 +93,64 @@ class ReportController extends Controller
             ])->get();
         }
 
+        // ═══ Project Monthly Report ═══
+        $projectMonthlyTasks = collect();
+        $projectTimeEntries = collect();
+        $projectTotalHours = 0;
+        $projectEstimatedHours = 0;
+        if ($selectedProjectId) {
+            $year = substr($month, 0, 4);
+            $mon = substr($month, 5, 2);
+
+            $projectMonthlyTasks = Task::with(['assignee', 'timeEntries'])
+                ->where('project_id', $selectedProjectId)
+                ->whereNull('parent_id')
+                ->where(function ($q) use ($year, $mon) {
+                    $q->where(function ($q2) use ($year, $mon) {
+                        $q2->whereYear('created_at', $year)->whereMonth('created_at', $mon);
+                    })->orWhere(function ($q2) use ($year, $mon) {
+                        $q2->whereYear('updated_at', $year)->whereMonth('updated_at', $mon);
+                    });
+                })
+                ->orderBy('status')
+                ->orderBy('updated_at', 'desc')
+                ->get();
+
+            $projectTimeEntries = TimeEntry::with(['user', 'task'])
+                ->whereHas('task', fn($q) => $q->where('project_id', $selectedProjectId))
+                ->whereYear('date_worked', $year)
+                ->whereMonth('date_worked', $mon)
+                ->orderBy('date_worked', 'desc')
+                ->get();
+
+            $projectTotalHours = $projectTimeEntries->sum('hours');
+            $projectEstimatedHours = Task::where('project_id', $selectedProjectId)
+                ->whereNull('parent_id')
+                ->sum('estimated_hours');
+        }
+
+        // ═══ Time Tracking Summary for User Report ═══
+        $userTimeEntries = collect();
+        $userTotalHours = 0;
+        if ($selectedUserId) {
+            $year = substr($month, 0, 4);
+            $mon = substr($month, 5, 2);
+
+            $userTimeEntries = TimeEntry::with(['task.project'])
+                ->where('user_id', $selectedUserId)
+                ->whereYear('date_worked', $year)
+                ->whereMonth('date_worked', $mon)
+                ->orderBy('date_worked', 'desc')
+                ->get();
+
+            $userTotalHours = $userTimeEntries->sum('hours');
+        }
+
         return view('reports.index', compact(
             'users', 'projects', 'tasks', 'completedTasks', 'selectedUserId',
-            'selectedProjectId', 'month', 'tab', 'overview', 'projectsHealth', 'teamWorkload'
+            'selectedProjectId', 'month', 'tab', 'overview', 'projectsHealth', 'teamWorkload',
+            'projectMonthlyTasks', 'projectTimeEntries', 'projectTotalHours', 'projectEstimatedHours',
+            'userTimeEntries', 'userTotalHours'
         ));
     }
 

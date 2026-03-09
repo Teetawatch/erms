@@ -6,6 +6,7 @@ use App\Models\Attachment;
 use App\Models\Task;
 use App\Models\TaskDependency;
 use App\Models\TaskUpdate;
+use App\Models\TimeEntry;
 use App\Notifications\TaskStatusChanged;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -35,6 +36,13 @@ class TaskDetail extends Component
 
     // Inline comment
     public $commentBody = '';
+    public $isAnonymousComment = false;
+
+    // Time tracking
+    public $showTimeEntryForm = false;
+    public $timeEntryHours = '';
+    public $timeEntryDescription = '';
+    public $timeEntryDate = '';
 
     // File upload
     public $uploadFiles = [];
@@ -45,6 +53,7 @@ class TaskDetail extends Component
     {
         $this->task = $task;
         $this->progress = $task->progress;
+        $this->timeEntryDate = now()->format('Y-m-d');
     }
 
     public function addSubtask()
@@ -155,6 +164,7 @@ class TaskDetail extends Component
         $comment = $this->task->comments()->create([
             'user_id' => auth()->id(),
             'body' => $this->commentBody,
+            'is_anonymous' => $this->isAnonymousComment,
         ]);
 
         $comment->load(['user', 'task']);
@@ -176,6 +186,7 @@ class TaskDetail extends Component
         }
 
         $this->commentBody = '';
+        $this->isAnonymousComment = false;
         $this->task->refresh();
         $this->dispatch('toast', message: 'เพิ่มความคิดเห็นเรียบร้อย', type: 'success');
     }
@@ -264,6 +275,45 @@ class TaskDetail extends Component
         }
     }
 
+    public function addTimeEntry()
+    {
+        $this->validate([
+            'timeEntryHours' => 'required|numeric|min:0.25|max:24',
+            'timeEntryDescription' => 'nullable|string|max:500',
+            'timeEntryDate' => 'required|date',
+        ], [
+            'timeEntryHours.required' => 'กรุณากรอกจำนวนชั่วโมง',
+            'timeEntryHours.min' => 'ต้องบันทึกอย่างน้อย 0.25 ชั่วโมง',
+            'timeEntryHours.max' => 'ไม่สามารถบันทึกเกิน 24 ชั่วโมง',
+            'timeEntryDate.required' => 'กรุณาเลือกวันที่',
+        ]);
+
+        TimeEntry::create([
+            'task_id' => $this->task->id,
+            'user_id' => auth()->id(),
+            'hours' => $this->timeEntryHours,
+            'description' => $this->timeEntryDescription,
+            'date_worked' => $this->timeEntryDate,
+        ]);
+
+        $this->timeEntryHours = '';
+        $this->timeEntryDescription = '';
+        $this->timeEntryDate = now()->format('Y-m-d');
+        $this->showTimeEntryForm = false;
+        $this->task->refresh();
+        $this->dispatch('toast', message: 'บันทึกเวลาเรียบร้อย', type: 'success');
+    }
+
+    public function deleteTimeEntry($timeEntryId)
+    {
+        $entry = TimeEntry::find($timeEntryId);
+        if ($entry && ($entry->user_id === auth()->id() || auth()->user()->hasRole('admin'))) {
+            $entry->delete();
+            $this->task->refresh();
+            $this->dispatch('toast', message: 'ลบบันทึกเวลาเรียบร้อย', type: 'success');
+        }
+    }
+
     public function getAvailableTasksProperty()
     {
         return Task::where('project_id', $this->task->project_id)
@@ -278,7 +328,7 @@ class TaskDetail extends Component
         $this->task->load([
             'project', 'assignee', 'comments.user', 'attachments.user',
             'taskUpdates.user', 'subtasks.assignee', 'dependencies.dependsOnTask',
-            'parent', 'customFieldValues.customField',
+            'parent', 'customFieldValues.customField', 'timeEntries.user',
         ]);
 
         return view('livewire.task-detail');

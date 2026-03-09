@@ -34,6 +34,13 @@
                 Workload ทีม
             </a>
             @endif
+            <a href="{{ route('reports.index', ['tab' => 'project_monthly']) }}"
+               @click.prevent="tab = 'project_monthly'"
+               :class="tab === 'project_monthly' ? 'bg-erms-blue text-white shadow-sm' : 'text-erms-muted hover:text-erms-text hover:bg-erms-surface-2'"
+               class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                รายโครงการ
+            </a>
             <a href="{{ route('reports.index', ['tab' => 'user']) }}"
                @click.prevent="tab = 'user'"
                :class="tab === 'user' ? 'bg-erms-blue text-white shadow-sm' : 'text-erms-muted hover:text-erms-text hover:bg-erms-surface-2'"
@@ -191,6 +198,139 @@
         </div>
         @endif
 
+        {{-- ═══════ PROJECT MONTHLY REPORT TAB ═══════ --}}
+        <div x-show="tab === 'project_monthly'" x-cloak>
+            <div class="card p-5 mb-6">
+                <form method="GET" action="{{ route('reports.index') }}" class="flex flex-wrap items-end gap-4">
+                    <input type="hidden" name="tab" value="project_monthly">
+                    <div>
+                        <label class="block text-sm text-erms-muted mb-1">โครงการ</label>
+                        <select name="project_id" class="input-field w-56">
+                            <option value="">เลือกโครงการ</option>
+                            @foreach($projects as $proj)
+                                <option value="{{ $proj->id }}" @selected($selectedProjectId == $proj->id)>{{ $proj->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-erms-muted mb-1">เดือน</label>
+                        <input type="month" name="month" value="{{ $month }}" class="input-field w-44">
+                    </div>
+                    <button type="submit" class="btn-primary">ดูรายงาน</button>
+                </form>
+            </div>
+
+            @if($selectedProjectId && $projectMonthlyTasks->count())
+                {{-- Summary Cards --}}
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <div class="card p-4 text-center">
+                        <p class="text-2xl font-bold text-erms-text">{{ $projectMonthlyTasks->count() }}</p>
+                        <p class="text-2xs text-erms-muted mt-0.5">งานทั้งหมด</p>
+                    </div>
+                    <div class="card p-4 text-center">
+                        <p class="text-2xl font-bold text-erms-green">{{ $projectMonthlyTasks->where('status', 'done')->count() }}</p>
+                        <p class="text-2xs text-erms-muted mt-0.5">เสร็จแล้ว</p>
+                    </div>
+                    <div class="card p-4 text-center">
+                        <p class="text-2xl font-bold text-erms-blue">{{ number_format($projectTotalHours, 2) }}</p>
+                        <p class="text-2xs text-erms-muted mt-0.5">ชั่วโมงที่บันทึก</p>
+                    </div>
+                    <div class="card p-4 text-center">
+                        <p class="text-2xl font-bold {{ $projectEstimatedHours > 0 && $projectTotalHours > $projectEstimatedHours ? 'text-erms-red' : 'text-erms-muted' }}">{{ number_format($projectEstimatedHours, 0) }}</p>
+                        <p class="text-2xs text-erms-muted mt-0.5">ชั่วโมงประมาณการ</p>
+                    </div>
+                </div>
+
+                {{-- Tasks Table --}}
+                <div class="card overflow-hidden mb-6">
+                    <div class="px-5 py-3 border-b border-erms-border bg-erms-surface-2">
+                        <h3 class="text-xs font-semibold text-erms-muted uppercase tracking-wider">รายการงานประจำเดือน</h3>
+                    </div>
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-erms-border">
+                                <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">งาน</th>
+                                <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">ผู้รับผิดชอบ</th>
+                                <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">สถานะ</th>
+                                <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">ความสำคัญ</th>
+                                <th class="text-right px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">ชั่วโมงบันทึก</th>
+                                <th class="text-right px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">ชั่วโมงประมาณ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-erms-border/50">
+                            @foreach($projectMonthlyTasks as $task)
+                                <tr class="hover:bg-erms-surface-2 transition">
+                                    <td class="px-5 py-3">
+                                        <a href="{{ route('tasks.show', $task) }}" class="text-[13px] font-medium hover:text-erms-blue transition" wire:navigate>{{ $task->title }}</a>
+                                    </td>
+                                    <td class="px-5 py-3">
+                                        @if($task->assignee)
+                                            <div class="flex items-center gap-1.5">
+                                                <img src="{{ $task->assignee->avatar_url }}" alt="" class="w-5 h-5 rounded-full ring-1 ring-erms-border-light">
+                                                <span class="text-2xs text-erms-text">{{ $task->assignee->name }}</span>
+                                            </div>
+                                        @else
+                                            <span class="text-2xs text-erms-muted">ไม่ระบุ</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3"><span class="badge-{{ str_replace('_','-',$task->status) }}">{{ $statusLabels[$task->status] ?? $task->status }}</span></td>
+                                    <td class="px-5 py-3"><span class="badge-{{ $task->priority }}">{{ $priorityLabels[$task->priority] ?? $task->priority }}</span></td>
+                                    <td class="px-5 py-3 text-right text-[13px] font-medium text-erms-blue">{{ number_format($task->timeEntries->sum('hours'), 2) }}</td>
+                                    <td class="px-5 py-3 text-right text-[13px] text-erms-muted">{{ $task->estimated_hours ? number_format($task->estimated_hours, 0) : '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Time Entries Breakdown --}}
+                @if($projectTimeEntries->count())
+                    <div class="card overflow-hidden">
+                        <div class="px-5 py-3 border-b border-erms-border bg-erms-surface-2">
+                            <h3 class="text-xs font-semibold text-erms-muted uppercase tracking-wider">รายละเอียดเวลาที่บันทึก</h3>
+                        </div>
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-erms-border">
+                                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">วันที่</th>
+                                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">พนักงาน</th>
+                                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">งาน</th>
+                                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">รายละเอียด</th>
+                                    <th class="text-right px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">ชั่วโมง</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-erms-border/50">
+                                @foreach($projectTimeEntries as $entry)
+                                    <tr class="hover:bg-erms-surface-2 transition">
+                                        <td class="px-5 py-3 text-2xs text-erms-muted whitespace-nowrap">{{ $entry->date_worked->translatedFormat('d M Y') }}</td>
+                                        <td class="px-5 py-3">
+                                            <div class="flex items-center gap-1.5">
+                                                <img src="{{ $entry->user->avatar_url }}" alt="" class="w-5 h-5 rounded-full ring-1 ring-erms-border-light">
+                                                <span class="text-2xs text-erms-text">{{ $entry->user->name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-5 py-3 text-[13px] text-erms-text">{{ $entry->task->title }}</td>
+                                        <td class="px-5 py-3 text-2xs text-erms-muted">{{ $entry->description ?? '—' }}</td>
+                                        <td class="px-5 py-3 text-right text-[13px] font-medium text-erms-blue">{{ number_format($entry->hours, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-erms-surface-2">
+                                    <td colspan="4" class="px-5 py-3 text-xs font-semibold text-erms-text text-right">รวมชั่วโมง</td>
+                                    <td class="px-5 py-3 text-right text-sm font-bold text-erms-blue">{{ number_format($projectTotalHours, 2) }} ชม.</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                @endif
+            @elseif($selectedProjectId)
+                <div class="card p-8 text-center text-erms-muted">ไม่พบข้อมูลงานในเดือนที่เลือก</div>
+            @else
+                <div class="card p-8 text-center text-erms-muted">กรุณาเลือกโครงการเพื่อดูรายงาน</div>
+            @endif
+        </div>
+
         {{-- ═══════ USER REPORT TAB ═══════ --}}
         <div x-show="tab === 'user'" x-cloak>
             <div class="card p-5 mb-6">
@@ -220,13 +360,23 @@
             </div>
 
             @if($selectedUserId && $tasks->count())
-                <div class="card p-5 mb-6">
-                    <div class="flex items-center justify-between">
-                        <h3 class="font-heading font-bold text-base">สรุปงานที่มอบหมาย</h3>
-                        <span class="text-2xl font-heading font-bold text-erms-green">{{ $completedTasks }}/{{ $tasks->count() }}</span>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+                    <div class="card p-4 text-center">
+                        <p class="text-2xl font-bold text-erms-green">{{ $completedTasks }}/{{ $tasks->count() }}</p>
+                        <p class="text-2xs text-erms-muted mt-0.5">งานเสร็จ/ทั้งหมด</p>
+                    </div>
+                    <div class="card p-4 text-center">
+                        <p class="text-2xl font-bold text-erms-blue">{{ number_format($userTotalHours, 2) }}</p>
+                        <p class="text-2xs text-erms-muted mt-0.5">ชั่วโมงที่บันทึก</p>
+                    </div>
+                    <div class="card p-4 text-center">
+                        @php $avgHoursPerTask = $tasks->count() > 0 ? $userTotalHours / $tasks->count() : 0; @endphp
+                        <p class="text-2xl font-bold text-erms-purple">{{ number_format($avgHoursPerTask, 1) }}</p>
+                        <p class="text-2xs text-erms-muted mt-0.5">เฉลี่ย ชม./งาน</p>
                     </div>
                 </div>
-                <div class="card overflow-hidden">
+
+                <div class="card overflow-hidden mb-6">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b border-erms-border bg-erms-surface-2">
@@ -250,6 +400,46 @@
                         </tbody>
                     </table>
                 </div>
+
+                {{-- User Time Entries --}}
+                @if($userTimeEntries->count())
+                    <div class="card overflow-hidden">
+                        <div class="px-5 py-3 border-b border-erms-border bg-erms-surface-2">
+                            <h3 class="text-xs font-semibold text-erms-muted uppercase tracking-wider flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                บันทึกเวลาการทำงาน
+                            </h3>
+                        </div>
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-erms-border">
+                                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">วันที่</th>
+                                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">งาน</th>
+                                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">โครงการ</th>
+                                    <th class="text-left px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">รายละเอียด</th>
+                                    <th class="text-right px-5 py-3 text-xs font-medium text-erms-muted uppercase tracking-wider">ชั่วโมง</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-erms-border/50">
+                                @foreach($userTimeEntries as $entry)
+                                    <tr class="hover:bg-erms-surface-2 transition">
+                                        <td class="px-5 py-3 text-2xs text-erms-muted whitespace-nowrap">{{ $entry->date_worked->translatedFormat('d M Y') }}</td>
+                                        <td class="px-5 py-3 text-[13px] text-erms-text">{{ $entry->task->title }}</td>
+                                        <td class="px-5 py-3 text-2xs text-erms-muted">{{ $entry->task->project->name ?? '-' }}</td>
+                                        <td class="px-5 py-3 text-2xs text-erms-muted">{{ $entry->description ?? '—' }}</td>
+                                        <td class="px-5 py-3 text-right text-[13px] font-medium text-erms-blue">{{ number_format($entry->hours, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-erms-surface-2">
+                                    <td colspan="4" class="px-5 py-3 text-xs font-semibold text-erms-text text-right">รวมชั่วโมง</td>
+                                    <td class="px-5 py-3 text-right text-sm font-bold text-erms-blue">{{ number_format($userTotalHours, 2) }} ชม.</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                @endif
             @elseif($selectedUserId)
                 <div class="card p-8 text-center text-erms-muted">ไม่พบข้อมูลงานในเดือนที่เลือก</div>
             @else

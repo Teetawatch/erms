@@ -6,16 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Comment extends Model
+class TimeEntry extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['task_id', 'user_id', 'body', 'is_anonymous'];
+    protected $fillable = ['task_id', 'user_id', 'hours', 'description', 'date_worked'];
 
     protected function casts(): array
     {
         return [
-            'is_anonymous' => 'boolean',
+            'date_worked' => 'date',
+            'hours' => 'decimal:2',
         ];
     }
 

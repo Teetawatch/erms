@@ -224,10 +224,23 @@
                 <div class="space-y-3 mb-4">
                     @foreach($task->comments as $comment)
                         <div class="flex gap-2.5 group/comment">
-                            <img src="{{ $comment->user->avatar_url }}" alt="" class="w-7 h-7 rounded-full ring-1 ring-erms-border-light flex-shrink-0 mt-0.5">
+                            @if($comment->is_anonymous && $comment->user_id !== auth()->id() && !auth()->user()->hasRole('admin'))
+                                <div class="w-7 h-7 rounded-full bg-erms-surface-2 flex items-center justify-center flex-shrink-0 mt-0.5 ring-1 ring-erms-border-light">
+                                    <svg class="w-4 h-4 text-erms-muted" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                </div>
+                            @else
+                                <img src="{{ $comment->user->avatar_url }}" alt="" class="w-7 h-7 rounded-full ring-1 ring-erms-border-light flex-shrink-0 mt-0.5">
+                            @endif
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 mb-0.5">
-                                    <span class="text-[13px] font-medium text-erms-text">{{ $comment->user->name }}</span>
+                                    @if($comment->is_anonymous && $comment->user_id !== auth()->id() && !auth()->user()->hasRole('admin'))
+                                        <span class="text-[13px] font-medium text-erms-muted italic">ไม่ระบุตัวตน</span>
+                                    @else
+                                        <span class="text-[13px] font-medium text-erms-text">{{ $comment->user->name }}</span>
+                                        @if($comment->is_anonymous)
+                                            <span class="text-2xs text-erms-muted italic">(ไม่ระบุตัวตน)</span>
+                                        @endif
+                                    @endif
                                     <span class="text-2xs text-erms-muted">{{ $comment->created_at->diffForHumans() }}</span>
                                     @if($comment->user_id === auth()->id() || auth()->user()->hasRole('admin'))
                                         <button wire:click="deleteComment({{ $comment->id }})" wire:confirm="ลบความคิดเห็นนี้?"
@@ -244,33 +257,136 @@
                 <div class="flex gap-2 items-start">
                     <img src="{{ auth()->user()->avatar_url }}" alt="" class="w-7 h-7 rounded-full ring-1 ring-erms-border-light flex-shrink-0 mt-0.5">
                     <div class="flex-1">
-                        <form wire:submit="addComment" class="flex gap-2">
-                            <div class="flex-1 relative" x-data="commentMention()" @click.away="showSuggestions = false">
-                                <input type="text" wire:model="commentBody" x-ref="commentInput"
-                                       @input="onInput($event)" @keydown.escape="showSuggestions = false"
-                                       @keydown.arrow-down.prevent="highlightNext()" @keydown.arrow-up.prevent="highlightPrev()"
-                                       @keydown.enter="if(showSuggestions && suggestions.length) { $event.preventDefault(); selectSuggestion(); }"
-                                       class="input-field flex-1 !text-[13px] !py-1.5 w-full" placeholder="เพิ่มความคิดเห็น... (ใช้ @ เพื่อกล่าวถึง)">
-                                {{-- @Mention dropdown --}}
-                                <div x-show="showSuggestions && suggestions.length > 0" x-cloak
-                                     class="absolute bottom-full left-0 mb-1 w-56 bg-white border border-erms-border rounded-lg shadow-asana-lg py-1 z-50 max-h-40 overflow-y-auto">
-                                    <template x-for="(user, idx) in suggestions" :key="user.id">
-                                        <button type="button" @click="selectUser(user)"
-                                                :class="idx === highlightedIndex ? 'bg-erms-surface-2' : ''"
-                                                class="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-erms-surface-2 transition">
-                                            <img :src="user.avatar" class="w-5 h-5 rounded-full" alt="">
-                                            <span class="text-[13px] text-erms-text" x-text="user.name"></span>
-                                        </button>
-                                    </template>
+                        <form wire:submit="addComment" class="space-y-2">
+                            <div class="flex gap-2">
+                                <div class="flex-1 relative" x-data="commentMention()" @click.away="showSuggestions = false">
+                                    <input type="text" wire:model="commentBody" x-ref="commentInput"
+                                           @input="onInput($event)" @keydown.escape="showSuggestions = false"
+                                           @keydown.arrow-down.prevent="highlightNext()" @keydown.arrow-up.prevent="highlightPrev()"
+                                           @keydown.enter="if(showSuggestions && suggestions.length) { $event.preventDefault(); selectSuggestion(); }"
+                                           class="input-field flex-1 !text-[13px] !py-1.5 w-full" placeholder="เพิ่มความคิดเห็น... (ใช้ @ เพื่อกล่าวถึง)">
+                                    {{-- @Mention dropdown --}}
+                                    <div x-show="showSuggestions && suggestions.length > 0" x-cloak
+                                         class="absolute bottom-full left-0 mb-1 w-56 bg-white border border-erms-border rounded-lg shadow-asana-lg py-1 z-50 max-h-40 overflow-y-auto">
+                                        <template x-for="(user, idx) in suggestions" :key="user.id">
+                                            <button type="button" @click="selectUser(user)"
+                                                    :class="idx === highlightedIndex ? 'bg-erms-surface-2' : ''"
+                                                    class="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-erms-surface-2 transition">
+                                                <img :src="user.avatar" class="w-5 h-5 rounded-full" alt="">
+                                                <span class="text-[13px] text-erms-text" x-text="user.name"></span>
+                                            </button>
+                                        </template>
+                                    </div>
                                 </div>
+                                <button type="submit" class="btn-primary !py-1.5 !text-xs" wire:loading.attr="disabled">
+                                    <span wire:loading.remove wire:target="addComment">ส่ง</span>
+                                    <span wire:loading wire:target="addComment">...</span>
+                                </button>
                             </div>
-                            <button type="submit" class="btn-primary !py-1.5 !text-xs" wire:loading.attr="disabled">
-                                <span wire:loading.remove wire:target="addComment">ส่ง</span>
-                                <span wire:loading wire:target="addComment">...</span>
-                            </button>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" wire:model="isAnonymousComment" class="rounded border-erms-border text-erms-blue focus:ring-erms-blue/30 w-3.5 h-3.5">
+                                <span class="text-2xs text-erms-muted">ส่งแบบไม่ระบุตัวตน</span>
+                                <svg class="w-3.5 h-3.5 text-erms-muted" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.59 6.59m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                            </label>
                         </form>
                     </div>
                 </div>
+            </div>
+
+            <div class="divider"></div>
+
+            {{-- ═══ Time Tracking ═══ --}}
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-[13px] font-semibold text-erms-text flex items-center gap-2">
+                        <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        บันทึกเวลา
+                        @if($task->timeEntries->count())
+                            <span class="text-2xs font-normal text-erms-muted">({{ number_format($task->timeEntries->sum('hours'), 2) }} ชม.)</span>
+                        @endif
+                    </h2>
+                    <button wire:click="$toggle('showTimeEntryForm')" class="btn-ghost !text-2xs !text-erms-blue">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        เพิ่ม
+                    </button>
+                </div>
+
+                @if($task->estimated_hours)
+                    @php $totalLogged = $task->timeEntries->sum('hours'); $pct = min(100, ($totalLogged / $task->estimated_hours) * 100); @endphp
+                    <div class="mb-3 bg-erms-surface-2/60 rounded-lg p-3">
+                        <div class="flex items-center justify-between text-2xs mb-1.5">
+                            <span class="text-erms-text-secondary">บันทึกแล้ว / ประมาณการ</span>
+                            <span class="font-medium {{ $pct > 100 ? 'text-erms-red' : 'text-erms-text' }}">{{ number_format($totalLogged, 2) }} / {{ $task->estimated_hours }} ชม.</span>
+                        </div>
+                        <div class="w-full h-2 bg-erms-surface rounded-full overflow-hidden">
+                            <div class="{{ $pct > 100 ? 'bg-erms-red' : 'bg-erms-blue' }} h-full rounded-full transition-all" style="width: {{ min($pct, 100) }}%"></div>
+                        </div>
+                    </div>
+                @endif
+
+                @if($showTimeEntryForm)
+                    <div class="mb-3 bg-erms-surface-2/60 rounded-lg p-3 space-y-2">
+                        <form wire:submit="addTimeEntry" class="space-y-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-2xs text-erms-muted mb-0.5 block">ชั่วโมง *</label>
+                                    <input type="number" wire:model="timeEntryHours" step="0.25" min="0.25" max="24" class="input-field !text-[13px] !py-1.5 w-full" placeholder="เช่น 2.5">
+                                    @error('timeEntryHours') <p class="text-2xs text-erms-red mt-0.5">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label class="text-2xs text-erms-muted mb-0.5 block">วันที่ *</label>
+                                    <input type="date" wire:model="timeEntryDate" class="input-field !text-[13px] !py-1.5 w-full">
+                                    @error('timeEntryDate') <p class="text-2xs text-erms-red mt-0.5">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-2xs text-erms-muted mb-0.5 block">รายละเอียด</label>
+                                <input type="text" wire:model="timeEntryDescription" class="input-field !text-[13px] !py-1.5 w-full" placeholder="อธิบายงานที่ทำ...">
+                            </div>
+                            <div class="flex items-center gap-2 pt-1">
+                                <button type="submit" class="btn-primary !text-xs !py-1.5">บันทึก</button>
+                                <button type="button" wire:click="$set('showTimeEntryForm', false)" class="btn-secondary !text-xs !py-1.5">ยกเลิก</button>
+                            </div>
+                        </form>
+                    </div>
+                @endif
+
+                @if($task->timeEntries->count())
+                    <div class="space-y-1">
+                        @foreach($task->timeEntries->sortByDesc('date_worked') as $entry)
+                            <div class="flex items-center justify-between bg-erms-surface-2/40 rounded-lg px-3 py-2 group hover:bg-erms-surface-2/60 transition">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-md bg-erms-blue-light flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[13px] font-semibold text-erms-blue">{{ number_format($entry->hours, 2) }} ชม.</span>
+                                            <span class="text-2xs text-erms-muted">{{ $entry->date_worked->translatedFormat('d M Y') }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 text-2xs text-erms-muted">
+                                            <span>{{ $entry->user->name }}</span>
+                                            @if($entry->description)
+                                                <span>&middot;</span>
+                                                <span class="truncate">{{ $entry->description }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                @if($entry->user_id === auth()->id() || auth()->user()->hasRole('admin'))
+                                    <button wire:click="deleteTimeEntry({{ $entry->id }})" wire:confirm="ลบบันทึกเวลานี้?"
+                                            class="opacity-0 group-hover:opacity-100 text-erms-muted hover:text-erms-red transition cursor-pointer flex-shrink-0">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    @if(!$showTimeEntryForm)
+                        <p class="text-2xs text-erms-muted py-3 text-center">ยังไม่มีบันทึกเวลา</p>
+                    @endif
+                @endif
             </div>
 
             <div class="divider"></div>
