@@ -68,16 +68,12 @@
                     {{-- Projects Section --}}
                     <div class="px-3 mb-1.5 flex items-center justify-between">
                         <span class="text-[11px] font-semibold text-erms-sidebar-text uppercase tracking-widest">โครงการ</span>
-                        @can('manage-all-projects')
                         <a href="{{ route('projects.create') }}" class="text-erms-sidebar-text hover:text-white transition" aria-label="สร้างโครงการ">
                             <i class="fa-solid fa-plus text-xs"></i>
                         </a>
-                        @endcan
                     </div>
                     @php
-                        $sidebarProjects = auth()->user()->hasRole('admin')
-                            ? \App\Models\Project::select('id', 'name', 'status')->latest()->take(8)->get()
-                            : auth()->user()->projects()->select('projects.id', 'projects.name', 'projects.status')->latest('projects.created_at')->take(8)->get();
+                        $sidebarProjects = \App\Models\Project::select('id', 'name', 'status')->latest()->take(8)->get();
                         $projectColors = ['planning' => 'bg-erms-yellow', 'in_progress' => 'bg-erms-blue', 'done' => 'bg-erms-green'];
                     @endphp
                     @foreach($sidebarProjects as $proj)

@@ -146,10 +146,7 @@ class TaskTemplateManager extends Component
 
     public function getProjectsProperty()
     {
-        $user = auth()->user();
-        return $user->hasRole('admin')
-            ? \App\Models\Project::select('id', 'name')->get()
-            : $user->projects()->select('projects.id', 'projects.name')->get();
+        return \App\Models\Project::select('id', 'name')->orderBy('name')->get();
     }
 
     public function getUsersProperty()

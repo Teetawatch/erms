@@ -3,6 +3,7 @@
         $statusLabels = ['todo' => 'รอดำเนินการ', 'in_progress' => 'กำลังดำเนินการ', 'review' => 'ตรวจสอบ', 'done' => 'เสร็จสิ้น'];
         $priorityLabels = ['low' => 'ต่ำ', 'medium' => 'ปานกลาง', 'high' => 'สูง', 'urgent' => 'เร่งด่วน'];
         $statusColors = ['todo' => '#9ca0a4', 'in_progress' => '#4573d2', 'review' => '#7c5cfc', 'done' => '#5da283'];
+        $canManage = $this->canManageTask();
     @endphp
 
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
@@ -21,6 +22,7 @@
 
                 {{-- Title Row --}}
                 <div class="flex items-start gap-3 mb-3">
+                    @if($canManage)
                     <button wire:click="quickStatusChange('{{ $task->status === 'done' ? 'todo' : 'done' }}')"
                             class="task-checkbox mt-1 {{ $task->status === 'done' ? 'checked' : '' }} !w-6 !h-6"
                             title="{{ $task->status === 'done' ? 'ทำเครื่องหมายไม่เสร็จ' : 'ทำเครื่องหมายเสร็จ' }}">
@@ -28,6 +30,13 @@
                             <i class="fa-solid fa-check text-white text-sm"></i>
                         @endif
                     </button>
+                    @else
+                    <span class="task-checkbox mt-1 {{ $task->status === 'done' ? 'checked' : '' }} !w-6 !h-6">
+                        @if($task->status === 'done')
+                            <i class="fa-solid fa-check text-white text-sm"></i>
+                        @endif
+                    </span>
+                    @endif
                     <h1 class="text-xl font-semibold text-erms-text leading-tight {{ $task->status === 'done' ? 'line-through text-erms-muted' : '' }}">
                         {{ $task->title }}
                     </h1>
@@ -35,12 +44,16 @@
 
                 {{-- Status & Meta Badges --}}
                 <div class="flex items-center gap-2 flex-wrap ml-9">
+                    @if($canManage)
                     <select wire:change="quickStatusChange($event.target.value)"
                             class="badge-{{ str_replace('_', '-', $task->status) }} border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-erms-blue/30 pr-5 appearance-none text-2xs">
                         @foreach($statusLabels as $val => $label)
                             <option value="{{ $val }}" @selected($task->status === $val)>{{ $label }}</option>
                         @endforeach
                     </select>
+                    @else
+                    <span class="badge-{{ str_replace('_', '-', $task->status) }} text-2xs">{{ $statusLabels[$task->status] ?? $task->status }}</span>
+                    @endif
                     <span class="badge-{{ $task->priority }}">{{ $priorityLabels[$task->priority] ?? $task->priority }}</span>
                     @if($task->project)
                         <a href="{{ route('projects.show', $task->project) }}" class="text-2xs text-erms-blue hover:underline font-medium" wire:navigate>{{ $task->project->name }}</a>
@@ -65,14 +78,18 @@
             <div class="ml-9">
                 <div class="flex items-center justify-between mb-1.5">
                     <span class="text-2xs font-medium text-erms-text-secondary uppercase tracking-wide">ความคืบหน้า</span>
-                    @if($editingProgress)
-                        <div class="flex items-center gap-2">
-                            <input type="number" wire:model="progress" min="0" max="100" class="input-field !w-16 !text-xs !py-1 text-center">
-                            <button wire:click="updateProgress" class="text-2xs text-erms-blue font-medium hover:underline cursor-pointer">บันทึก</button>
-                            <button wire:click="$set('editingProgress', false)" class="text-2xs text-erms-muted hover:text-erms-text cursor-pointer">ยกเลิก</button>
-                        </div>
+                    @if($canManage)
+                        @if($editingProgress)
+                            <div class="flex items-center gap-2">
+                                <input type="number" wire:model="progress" min="0" max="100" class="input-field !w-16 !text-xs !py-1 text-center">
+                                <button wire:click="updateProgress" class="text-2xs text-erms-blue font-medium hover:underline cursor-pointer">บันทึก</button>
+                                <button wire:click="$set('editingProgress', false)" class="text-2xs text-erms-muted hover:text-erms-text cursor-pointer">ยกเลิก</button>
+                            </div>
+                        @else
+                            <button wire:click="$set('editingProgress', true)" class="text-2xs text-erms-blue font-medium hover:underline cursor-pointer">{{ $task->progress }}%</button>
+                        @endif
                     @else
-                        <button wire:click="$set('editingProgress', true)" class="text-2xs text-erms-blue font-medium hover:underline cursor-pointer">{{ $task->progress }}%</button>
+                        <span class="text-2xs text-erms-text-secondary">{{ $task->progress }}%</span>
                     @endif
                 </div>
                 <div class="progress-bar">
@@ -100,13 +117,15 @@
                             <span class="text-2xs font-normal text-erms-muted">{{ $task->subtasks->where('status', 'done')->count() }}/{{ $task->subtasks->count() }}</span>
                         @endif
                     </h2>
+                    @if($canManage)
                     <button wire:click="$toggle('showSubtaskForm')" class="btn-ghost !text-2xs !text-erms-blue">
                         <i class="fa-solid fa-plus"></i>
                         เพิ่ม
                     </button>
+                    @endif
                 </div>
 
-                @if($showSubtaskForm)
+                @if($canManage && $showSubtaskForm)
                     <div class="mb-2 bg-erms-surface-2/60 rounded-lg p-3">
                         <form wire:submit="addSubtask" class="flex gap-2">
                             <input type="text" wire:model="subtaskTitle" class="input-field flex-1 !text-[13px] !py-1.5" placeholder="ชื่องานย่อย..." autofocus>
@@ -131,9 +150,11 @@
                             @if($subtask->assignee)
                                 <img src="{{ $subtask->assignee->avatar_url }}" alt="" class="w-5 h-5 rounded-full ring-1 ring-erms-border-light" title="{{ $subtask->assignee->name }}">
                             @endif
+                            @if($canManage)
                             <button wire:click="deleteSubtask({{ $subtask->id }})" wire:confirm="ลบงานย่อยนี้?" class="opacity-0 group-hover:opacity-100 text-erms-muted hover:text-erms-red transition cursor-pointer">
                                 <i class="fa-solid fa-trash text-xs"></i>
                             </button>
+                            @endif
                         </div>
                     @empty
                         @if(!$showSubtaskForm)
@@ -149,13 +170,15 @@
             <div>
                 <div class="flex items-center justify-between mb-2">
                     <h2 class="text-[13px] font-semibold text-erms-text">งานที่ต้องทำก่อน</h2>
+                    @if($canManage)
                     <button wire:click="$toggle('showDependencyForm')" class="btn-ghost !text-2xs !text-erms-blue">
                         <i class="fa-solid fa-plus"></i>
                         เพิ่ม
                     </button>
+                    @endif
                 </div>
 
-                @if($showDependencyForm)
+                @if($canManage && $showDependencyForm)
                     <div class="mb-2 bg-erms-surface-2/60 rounded-lg p-3">
                         <form wire:submit="addDependency" class="flex gap-2">
                             <select wire:model="dependsOnTaskId" class="input-field flex-1 !text-[13px] !py-1.5">
@@ -183,9 +206,11 @@
                                 {{ $dep->dependsOnTask->title }}
                             </a>
                             <span class="badge-{{ str_replace('_', '-', $dep->dependsOnTask->status) }}">{{ $statusLabels[$dep->dependsOnTask->status] ?? $dep->dependsOnTask->status }}</span>
+                            @if($canManage)
                             <button wire:click="removeDependency({{ $dep->id }})" class="opacity-0 group-hover:opacity-100 text-erms-muted hover:text-erms-red transition cursor-pointer">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
+                            @endif
                         </div>
                     @empty
                         @if(!$showDependencyForm)

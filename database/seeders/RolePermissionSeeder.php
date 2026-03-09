@@ -51,6 +51,7 @@ class RolePermissionSeeder extends Seeder
 
         $employee = Role::firstOrCreate(['name' => 'employee']);
         $employee->syncPermissions([
+            'manage-own-projects',
             'manage-own-tasks',
             'manage-own-work-logs',
             'manage-comments',

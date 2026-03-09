@@ -3,12 +3,10 @@
 
     <div class="flex items-center justify-between mb-5">
         <p class="text-[13px] text-erms-text-secondary">โครงการทั้งหมด {{ $projects->total() }} รายการ</p>
-        @can('manage-all-projects')
         <a href="{{ route('projects.create') }}" class="btn-primary !text-[13px]">
             <i class="fa-solid fa-plus"></i>
             สร้างโครงการ
         </a>
-        @endcan
     </div>
 
     @php

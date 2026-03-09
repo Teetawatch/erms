@@ -79,10 +79,7 @@ class QuickCreateTask extends Component
 
     public function getProjectsProperty()
     {
-        $user = auth()->user();
-        return $user->hasRole('admin')
-            ? Project::select('id', 'name')->orderBy('name')->get()
-            : $user->projects()->select('projects.id', 'projects.name')->orderBy('projects.name')->get();
+        return Project::select('id', 'name')->orderBy('name')->get();
     }
 
     public function getUsersProperty()

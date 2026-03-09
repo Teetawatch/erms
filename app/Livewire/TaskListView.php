@@ -97,6 +97,9 @@ class TaskListView extends Component
         $task = Task::find($taskId);
         if (!$task) return;
 
+        $user = auth()->user();
+        if (!$user->hasRole('admin') && !$user->hasRole('manager') && $task->assigned_to !== $user->id) return;
+
         $oldStatus = $task->status;
         $task->update(['status' => $status]);
 
@@ -126,7 +129,12 @@ class TaskListView extends Component
     {
         if (empty($this->selectedTasks) || !$this->bulkStatus) return;
 
+        $user = auth()->user();
         $tasks = Task::whereIn('id', $this->selectedTasks)->get();
+
+        if (!$user->hasRole('admin') && !$user->hasRole('manager')) {
+            $tasks = $tasks->filter(fn($t) => $t->assigned_to === $user->id);
+        }
         foreach ($tasks as $task) {
             $oldStatus = $task->status;
             $task->update(['status' => $this->bulkStatus]);

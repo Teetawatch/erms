@@ -23,6 +23,7 @@
                     <span class="text-xs text-erms-muted ml-2">กำหนดส่ง: {{ $project->deadline->translatedFormat('d M Y') }}</span>
                 @endif
             </div>
+            @if(auth()->user()->hasRole('admin') || $project->created_by === auth()->id())
             <div class="flex items-center gap-2">
                 <a href="{{ route('projects.edit', $project) }}" class="btn-secondary text-xs">แก้ไข</a>
                 <form method="POST" action="{{ route('projects.destroy', $project) }}" onsubmit="return confirm('ต้องการลบโครงการนี้?')">
@@ -30,6 +31,7 @@
                     <button type="submit" class="btn-danger text-xs">ลบ</button>
                 </form>
             </div>
+            @endif
         </div>
         @if($project->description)
             <p class="text-sm text-erms-muted mb-4">{{ $project->description }}</p>

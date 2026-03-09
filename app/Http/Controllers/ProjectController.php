@@ -10,11 +10,7 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
-
-        $projects = $user->hasRole('admin')
-            ? Project::with(['creator', 'members', 'tasks'])->latest()->paginate(12)
-            : $user->projects()->with(['creator', 'members', 'tasks'])->latest()->paginate(12);
+        $projects = Project::with(['creator', 'members', 'tasks'])->latest()->paginate(12);
 
         return view('projects.index', compact('projects'));
     }
@@ -97,6 +93,9 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
+        $user = auth()->user();
+        abort_unless($user->hasRole('admin') || $project->created_by === $user->id, 403, 'คุณไม่มีสิทธิ์แก้ไขโครงการนี้');
+
         $users = User::select('id', 'name')->get();
         $project->load('members');
         return view('projects.edit', compact('project', 'users'));
@@ -104,6 +103,8 @@ class ProjectController extends Controller
 
     public function update(Request $request, Project $project)
     {
+        $user = auth()->user();
+        abort_unless($user->hasRole('admin') || $project->created_by === $user->id, 403, 'คุณไม่มีสิทธิ์แก้ไขโครงการนี้');
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -131,6 +132,9 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        $user = auth()->user();
+        abort_unless($user->hasRole('admin') || $project->created_by === $user->id, 403, 'คุณไม่มีสิทธิ์ลบโครงการนี้');
+
         $project->delete();
         return redirect()->route('projects.index')->with('success', 'ลบโครงการเรียบร้อย');
     }

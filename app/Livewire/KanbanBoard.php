@@ -74,10 +74,7 @@ class KanbanBoard extends Component
 
     public function getProjectsProperty()
     {
-        $user = auth()->user();
-        return $user->hasRole('admin')
-            ? Project::select('id', 'name')->get()
-            : $user->projects()->select('projects.id', 'projects.name')->get();
+        return Project::select('id', 'name')->orderBy('name')->get();
     }
 
     public function getUsersProperty()
@@ -140,6 +137,9 @@ class KanbanBoard extends Component
         $task = Task::find($taskId);
         if (!$task) return;
 
+        $user = auth()->user();
+        if (!$user->hasRole('admin') && !$user->hasRole('manager') && $task->assigned_to !== $user->id) return;
+
         $oldStatus = $task->status;
         if ($oldStatus !== $newStatus) {
             TaskUpdate::create([
@@ -164,7 +164,13 @@ class KanbanBoard extends Component
 
     public function deleteTask($taskId)
     {
-        Task::find($taskId)?->delete();
+        $task = Task::find($taskId);
+        if (!$task) return;
+
+        $user = auth()->user();
+        if (!$user->hasRole('admin') && !$user->hasRole('manager') && $task->assigned_to !== $user->id) return;
+
+        $task->delete();
     }
 
     private function resetForm()

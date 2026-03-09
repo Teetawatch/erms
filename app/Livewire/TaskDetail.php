@@ -56,8 +56,17 @@ class TaskDetail extends Component
         $this->timeEntryDate = now()->format('Y-m-d');
     }
 
+    public function canManageTask(): bool
+    {
+        $user = auth()->user();
+        return $user->hasRole('admin')
+            || $user->hasRole('manager')
+            || $this->task->assigned_to === $user->id;
+    }
+
     public function addSubtask()
     {
+        if (!$this->canManageTask()) return;
         $this->validate(['subtaskTitle' => 'required|string|max:255']);
 
         Task::create([
@@ -77,6 +86,7 @@ class TaskDetail extends Component
 
     public function toggleSubtask($subtaskId)
     {
+        if (!$this->canManageTask()) return;
         $subtask = Task::find($subtaskId);
         if (!$subtask || $subtask->parent_id !== $this->task->id) return;
 
@@ -97,6 +107,7 @@ class TaskDetail extends Component
 
     public function deleteSubtask($subtaskId)
     {
+        if (!$this->canManageTask()) return;
         $subtask = Task::find($subtaskId);
         if ($subtask && $subtask->parent_id === $this->task->id) {
             $subtask->delete();
@@ -106,6 +117,7 @@ class TaskDetail extends Component
 
     public function addDependency()
     {
+        if (!$this->canManageTask()) return;
         $this->validate(['dependsOnTaskId' => 'required|exists:tasks,id']);
 
         if ($this->dependsOnTaskId == $this->task->id) {
@@ -125,12 +137,14 @@ class TaskDetail extends Component
 
     public function removeDependency($depId)
     {
+        if (!$this->canManageTask()) return;
         TaskDependency::where('id', $depId)->where('task_id', $this->task->id)->delete();
         $this->task->refresh();
     }
 
     public function updateProgress()
     {
+        if (!$this->canManageTask()) return;
         $this->validate(['progress' => 'required|integer|min:0|max:100']);
         $this->task->update(['progress' => $this->progress]);
         $this->editingProgress = false;
@@ -138,6 +152,7 @@ class TaskDetail extends Component
 
     public function quickStatusChange($status)
     {
+        if (!$this->canManageTask()) return;
         $oldStatus = $this->task->status;
         $this->task->update(['status' => $status]);
 
