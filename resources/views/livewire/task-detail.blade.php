@@ -36,7 +36,7 @@
                 {{-- Status & Meta Badges --}}
                 <div class="flex items-center gap-2 flex-wrap ml-9">
                     <select wire:change="quickStatusChange($event.target.value)"
-                            class="badge-{{ str_replace('_', '-', $task->status) }} border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-erms-blue/30 pr-5 appearance-auto text-2xs">
+                            class="badge-{{ str_replace('_', '-', $task->status) }} border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-erms-blue/30 pr-5 appearance-none text-2xs">
                         @foreach($statusLabels as $val => $label)
                             <option value="{{ $val }}" @selected($task->status === $val)>{{ $label }}</option>
                         @endforeach

@@ -25,11 +25,22 @@ class ReportController extends Controller
         $completedTasks = 0;
 
         if ($selectedUserId) {
+            $year = substr($month, 0, 4);
+            $mon = substr($month, 5, 2);
+
             $tasks = Task::with('project', 'assignee')
                 ->where('assigned_to', $selectedUserId)
-                ->whereYear('created_at', substr($month, 0, 4))
-                ->whereMonth('created_at', substr($month, 5, 2))
-                ->orderBy('created_at', 'desc')
+                ->whereNull('parent_id')
+                ->where(function ($q) use ($year, $mon) {
+                    $q->where(function ($q2) use ($year, $mon) {
+                        $q2->whereYear('created_at', $year)->whereMonth('created_at', $mon);
+                    })->orWhere(function ($q2) use ($year, $mon) {
+                        $q2->whereYear('updated_at', $year)->whereMonth('updated_at', $mon);
+                    })->orWhere(function ($q2) use ($year, $mon) {
+                        $q2->whereYear('due_date', $year)->whereMonth('due_date', $mon);
+                    });
+                })
+                ->orderBy('updated_at', 'desc')
                 ->get();
             $completedTasks = $tasks->where('status', 'done')->count();
         }
@@ -160,11 +171,22 @@ class ReportController extends Controller
         $month = $request->query('month', now()->format('Y-m'));
 
         $user = User::findOrFail($userId);
+        $year = substr($month, 0, 4);
+        $mon = substr($month, 5, 2);
+
         $tasks = Task::with('project')
             ->where('assigned_to', $userId)
-            ->whereYear('created_at', substr($month, 0, 4))
-            ->whereMonth('created_at', substr($month, 5, 2))
-            ->orderBy('created_at')
+            ->whereNull('parent_id')
+            ->where(function ($q) use ($year, $mon) {
+                $q->where(function ($q2) use ($year, $mon) {
+                    $q2->whereYear('created_at', $year)->whereMonth('created_at', $mon);
+                })->orWhere(function ($q2) use ($year, $mon) {
+                    $q2->whereYear('updated_at', $year)->whereMonth('updated_at', $mon);
+                })->orWhere(function ($q2) use ($year, $mon) {
+                    $q2->whereYear('due_date', $year)->whereMonth('due_date', $mon);
+                });
+            })
+            ->orderBy('updated_at', 'desc')
             ->get();
 
         $completedTasks = $tasks->where('status', 'done')->count();

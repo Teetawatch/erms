@@ -139,7 +139,7 @@
                     {{-- Status --}}
                     <div class="w-32 px-3">
                         <select wire:change="quickStatusChange({{ $task->id }}, $event.target.value)"
-                                class="badge-{{ str_replace('_', '-', $task->status) }} !text-2xs border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-erms-blue/30 pr-5 appearance-auto bg-transparent">
+                                class="badge-{{ str_replace('_', '-', $task->status) }} !text-2xs border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-erms-blue/30 pr-5 appearance-none bg-transparent">
                             @foreach($statusLabels as $val => $label)
                                 <option value="{{ $val }}" @selected($task->status === $val)>{{ $label }}</option>
                             @endforeach
