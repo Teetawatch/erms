@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between mb-4">
         <h3 class="font-heading font-bold text-base">ฟิลด์กำหนดเอง</h3>
         <button wire:click="$set('showCreateModal', true)" class="btn-primary text-xs">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <i class="fa-solid fa-plus mr-1"></i>
             เพิ่มฟิลด์
         </button>
     </div>
@@ -14,19 +14,19 @@
                 <div class="w-8 h-8 rounded-lg bg-erms-blue/10 flex items-center justify-center flex-shrink-0">
                     @switch($field->type)
                         @case('text')
-                            <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                            <i class="fa-solid fa-font text-erms-blue"></i>
                             @break
                         @case('number')
-                            <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+                            <i class="fa-solid fa-hashtag text-erms-blue"></i>
                             @break
                         @case('date')
-                            <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <i class="fa-solid fa-calendar text-erms-blue"></i>
                             @break
                         @case('select')
-                            <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                            <i class="fa-solid fa-list text-erms-blue"></i>
                             @break
                         @case('checkbox')
-                            <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <i class="fa-solid fa-square-check text-erms-blue"></i>
                             @break
                     @endswitch
                 </div>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <button wire:click="deleteField({{ $field->id }})" wire:confirm="ลบฟิลด์นี้?" class="text-erms-muted hover:text-erms-red cursor-pointer transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
         @empty
@@ -63,7 +63,7 @@
             <div class="px-6 py-4 border-b border-erms-border flex items-center justify-between">
                 <h3 class="font-heading font-bold text-base">เพิ่มฟิลด์กำหนดเอง</h3>
                 <button wire:click="$set('showCreateModal', false)" class="text-erms-muted hover:text-erms-text cursor-pointer">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             <form wire:submit="createField" class="p-6 space-y-4">

@@ -12,7 +12,7 @@
                 {{-- Search Input --}}
                 <div class="bg-white rounded-xl shadow-asana-lg border border-erms-border overflow-hidden">
                     <div class="flex items-center gap-3 px-4 py-3 border-b border-erms-border-light">
-                        <svg class="w-5 h-5 text-erms-muted flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <i class="fa-solid fa-magnifying-glass text-erms-muted flex-shrink-0"></i>
                         <input type="text" wire:model.live.debounce.300ms="query" autofocus
                                class="flex-1 text-[15px] text-erms-text border-0 outline-none bg-transparent placeholder:text-erms-muted"
                                placeholder="ค้นหางาน, โครงการ, คน...">
@@ -42,7 +42,7 @@
                                                 @if(in_array($type, ['task', 'project']) && isset($item['status']))
                                                     <span class="w-3 h-3 rounded-full block" style="background-color: {{ $statusColors[$item['status']] ?? '#9ca0a4' }}"></span>
                                                 @else
-                                                    <svg class="w-4 h-4 text-erms-muted" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                                    <i class="fa-solid fa-user text-erms-muted"></i>
                                                 @endif
                                             </div>
                                             <div class="flex-1 min-w-0">
@@ -54,14 +54,14 @@
                                             @if($type === 'task' && isset($item['priority']))
                                                 <span class="badge-{{ $item['priority'] }} flex-shrink-0">{{ $item['priority'] }}</span>
                                             @endif
-                                            <svg class="w-4 h-4 text-erms-muted opacity-0 group-hover:opacity-100 transition flex-shrink-0" :class="activeIndex === {{ $flatIndex }} ? '!opacity-100' : ''" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                            <i class="fa-solid fa-chevron-right text-erms-muted opacity-0 group-hover:opacity-100 transition flex-shrink-0 text-xs" :class="activeIndex === {{ $flatIndex }} ? '!opacity-100' : ''"></i>
                                         </button>
                                         @php $flatIndex++; @endphp
                                     @endforeach
                                 @endforeach
                             @else
                                 <div class="px-4 py-8 text-center">
-                                    <svg class="w-8 h-8 mx-auto text-erms-muted/40 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    <i class="fa-solid fa-magnifying-glass text-3xl text-erms-muted/40 mb-2"></i>
                                     <p class="text-[13px] text-erms-muted">ไม่พบผลลัพธ์สำหรับ "{{ $query }}"</p>
                                 </div>
                             @endif

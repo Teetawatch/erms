@@ -15,7 +15,7 @@
             @endforeach
         </select>
         <span class="text-2xs text-erms-muted flex items-center gap-1 ml-2">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <i class="fa-solid fa-circle-info"></i>
             แสดงเฉพาะงานที่มีวันเริ่มต้นและกำหนดส่ง
         </span>
     </div>
@@ -24,7 +24,7 @@
 
     @if(count($timeline['tasks']) === 0)
         <div class="card py-16 text-center">
-            <svg class="w-12 h-12 mx-auto text-erms-muted/40 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <i class="fa-solid fa-calendar-days text-5xl text-erms-muted/40 mb-3"></i>
             <p class="text-[13px] text-erms-muted">ไม่มีงานที่มีวันเริ่มต้นและกำหนดส่ง</p>
             <p class="text-2xs text-erms-muted mt-1">เพิ่ม "วันเริ่มต้น" และ "กำหนดส่ง" ให้กับงานเพื่อดูใน Timeline</p>
         </div>

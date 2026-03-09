@@ -16,7 +16,7 @@
                         @if($activity->old_status && $activity->new_status)
                             @php $sLabels = ['todo' => 'รอดำเนินการ', 'in_progress' => 'กำลังดำเนินการ', 'review' => 'ตรวจสอบ', 'done' => 'เสร็จสิ้น']; @endphp
                             <span class="badge-{{ str_replace('_', '-', $activity->old_status) }} mx-0.5">{{ $sLabels[$activity->old_status] ?? $activity->old_status }}</span>
-                            <svg class="inline w-3 h-3 text-erms-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <i class="fa-solid fa-chevron-right text-erms-muted text-xs inline"></i>
                             <span class="badge-{{ str_replace('_', '-', $activity->new_status) }} mx-0.5">{{ $sLabels[$activity->new_status] ?? $activity->new_status }}</span>
                         @elseif($activity->new_status)
                             @php $sLabels = ['todo' => 'รอดำเนินการ', 'in_progress' => 'กำลังดำเนินการ', 'review' => 'ตรวจสอบ', 'done' => 'เสร็จสิ้น']; @endphp

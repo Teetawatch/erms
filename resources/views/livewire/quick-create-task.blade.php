@@ -8,7 +8,7 @@
                 <div class="flex items-center justify-between px-5 py-3.5 border-b border-erms-border-light">
                     <h3 class="text-[15px] font-semibold text-erms-text">สร้างงานใหม่</h3>
                     <button wire:click="$set('showModal', false)" class="btn-icon" aria-label="ปิด">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
 
@@ -24,7 +24,7 @@
                     {{-- Description (collapsible) --}}
                     <div x-data="{ showDesc: false }">
                         <button type="button" @click="showDesc = !showDesc" class="text-2xs text-erms-text-secondary hover:text-erms-text transition flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                            <i class="fa-solid fa-align-left"></i>
                             เพิ่มรายละเอียด
                         </button>
                         <div x-show="showDesc" x-collapse>
@@ -77,7 +77,7 @@
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <button type="button" wire:click="$set('showModal', false)" class="btn-secondary !text-[13px] !py-1.5">ยกเลิก</button>
                         <button type="submit" class="btn-primary !text-[13px] !py-1.5" wire:loading.attr="disabled">
-                            <svg wire:loading wire:target="createTask" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                            <i wire:loading wire:target="createTask" class="fa-solid fa-spinner fa-spin"></i>
                             <span wire:loading.remove wire:target="createTask">สร้างงาน</span>
                             <span wire:loading wire:target="createTask">กำลังสร้าง...</span>
                         </button>

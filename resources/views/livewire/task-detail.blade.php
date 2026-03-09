@@ -14,7 +14,7 @@
                 @if($task->parent)
                     <div class="mb-2 text-2xs text-erms-muted flex items-center gap-1">
                         <a href="{{ route('tasks.show', $task->parent) }}" class="hover:text-erms-blue transition" wire:navigate>{{ $task->parent->title }}</a>
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
                         <span class="text-erms-text-secondary">{{ $task->title }}</span>
                     </div>
                 @endif
@@ -25,7 +25,7 @@
                             class="task-checkbox mt-1 {{ $task->status === 'done' ? 'checked' : '' }} !w-6 !h-6"
                             title="{{ $task->status === 'done' ? 'ทำเครื่องหมายไม่เสร็จ' : 'ทำเครื่องหมายเสร็จ' }}">
                         @if($task->status === 'done')
-                            <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <i class="fa-solid fa-check text-white text-sm"></i>
                         @endif
                     </button>
                     <h1 class="text-xl font-semibold text-erms-text leading-tight {{ $task->status === 'done' ? 'line-through text-erms-muted' : '' }}">
@@ -47,7 +47,7 @@
                     @endif
                     @if($task->isBlocked())
                         <span class="badge-urgent">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <i class="fa-solid fa-lock text-xs"></i>
                             ถูกบล็อก
                         </span>
                     @endif
@@ -101,7 +101,7 @@
                         @endif
                     </h2>
                     <button wire:click="$toggle('showSubtaskForm')" class="btn-ghost !text-2xs !text-erms-blue">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <i class="fa-solid fa-plus"></i>
                         เพิ่ม
                     </button>
                 </div>
@@ -122,7 +122,7 @@
                         <div class="flex items-center gap-3 py-1.5 px-1 rounded-md hover:bg-erms-surface-2/60 transition group">
                             <button wire:click="toggleSubtask({{ $subtask->id }})" class="task-checkbox">
                                 @if($subtask->status === 'done')
-                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    <i class="fa-solid fa-check text-white text-xs"></i>
                                 @endif
                             </button>
                             <a href="{{ route('tasks.show', $subtask) }}" class="flex-1 text-[13px] {{ $subtask->status === 'done' ? 'line-through text-erms-muted' : 'text-erms-text' }} hover:text-erms-blue transition" wire:navigate>
@@ -132,7 +132,7 @@
                                 <img src="{{ $subtask->assignee->avatar_url }}" alt="" class="w-5 h-5 rounded-full ring-1 ring-erms-border-light" title="{{ $subtask->assignee->name }}">
                             @endif
                             <button wire:click="deleteSubtask({{ $subtask->id }})" wire:confirm="ลบงานย่อยนี้?" class="opacity-0 group-hover:opacity-100 text-erms-muted hover:text-erms-red transition cursor-pointer">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <i class="fa-solid fa-trash text-xs"></i>
                             </button>
                         </div>
                     @empty
@@ -150,7 +150,7 @@
                 <div class="flex items-center justify-between mb-2">
                     <h2 class="text-[13px] font-semibold text-erms-text">งานที่ต้องทำก่อน</h2>
                     <button wire:click="$toggle('showDependencyForm')" class="btn-ghost !text-2xs !text-erms-blue">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <i class="fa-solid fa-plus"></i>
                         เพิ่ม
                     </button>
                 </div>
@@ -176,7 +176,7 @@
                         <div class="flex items-center gap-3 py-1.5 px-1 rounded-md hover:bg-erms-surface-2/60 transition group">
                             <span class="task-checkbox {{ $dep->dependsOnTask->status === 'done' ? 'checked' : '' }}">
                                 @if($dep->dependsOnTask->status === 'done')
-                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    <i class="fa-solid fa-check text-white text-xs"></i>
                                 @endif
                             </span>
                             <a href="{{ route('tasks.show', $dep->dependsOnTask) }}" class="flex-1 text-[13px] hover:text-erms-blue transition" wire:navigate>
@@ -184,7 +184,7 @@
                             </a>
                             <span class="badge-{{ str_replace('_', '-', $dep->dependsOnTask->status) }}">{{ $statusLabels[$dep->dependsOnTask->status] ?? $dep->dependsOnTask->status }}</span>
                             <button wire:click="removeDependency({{ $dep->id }})" class="opacity-0 group-hover:opacity-100 text-erms-muted hover:text-erms-red transition cursor-pointer">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
                     @empty
@@ -226,7 +226,7 @@
                         <div class="flex gap-2.5 group/comment">
                             @if($comment->is_anonymous && $comment->user_id !== auth()->id() && !auth()->user()->hasRole('admin'))
                                 <div class="w-7 h-7 rounded-full bg-erms-surface-2 flex items-center justify-center flex-shrink-0 mt-0.5 ring-1 ring-erms-border-light">
-                                    <svg class="w-4 h-4 text-erms-muted" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    <i class="fa-solid fa-user text-erms-muted text-sm"></i>
                                 </div>
                             @else
                                 <img src="{{ $comment->user->avatar_url }}" alt="" class="w-7 h-7 rounded-full ring-1 ring-erms-border-light flex-shrink-0 mt-0.5">
@@ -245,7 +245,7 @@
                                     @if($comment->user_id === auth()->id() || auth()->user()->hasRole('admin'))
                                         <button wire:click="deleteComment({{ $comment->id }})" wire:confirm="ลบความคิดเห็นนี้?"
                                                 class="opacity-0 group-hover/comment:opacity-100 text-erms-muted hover:text-erms-red transition cursor-pointer ml-auto">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            <i class="fa-solid fa-trash text-xs"></i>
                                         </button>
                                     @endif
                                 </div>
@@ -286,7 +286,7 @@
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <input type="checkbox" wire:model="isAnonymousComment" class="rounded border-erms-border text-erms-blue focus:ring-erms-blue/30 w-3.5 h-3.5">
                                 <span class="text-2xs text-erms-muted">ส่งแบบไม่ระบุตัวตน</span>
-                                <svg class="w-3.5 h-3.5 text-erms-muted" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.59 6.59m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                                <i class="fa-solid fa-eye-slash text-erms-muted text-xs"></i>
                             </label>
                         </form>
                     </div>
@@ -299,14 +299,14 @@
             <div>
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-[13px] font-semibold text-erms-text flex items-center gap-2">
-                        <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <i class="fa-solid fa-clock text-erms-blue"></i>
                         บันทึกเวลา
                         @if($task->timeEntries->count())
                             <span class="text-2xs font-normal text-erms-muted">({{ number_format($task->timeEntries->sum('hours'), 2) }} ชม.)</span>
                         @endif
                     </h2>
                     <button wire:click="$toggle('showTimeEntryForm')" class="btn-ghost !text-2xs !text-erms-blue">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <i class="fa-solid fa-plus"></i>
                         เพิ่ม
                     </button>
                 </div>
@@ -357,7 +357,7 @@
                             <div class="flex items-center justify-between bg-erms-surface-2/40 rounded-lg px-3 py-2 group hover:bg-erms-surface-2/60 transition">
                                 <div class="flex items-center gap-2.5 min-w-0">
                                     <div class="w-8 h-8 rounded-md bg-erms-blue-light flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-4 h-4 text-erms-blue" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <i class="fa-solid fa-clock text-erms-blue"></i>
                                     </div>
                                     <div class="min-w-0">
                                         <div class="flex items-center gap-2">
@@ -376,7 +376,7 @@
                                 @if($entry->user_id === auth()->id() || auth()->user()->hasRole('admin'))
                                     <button wire:click="deleteTimeEntry({{ $entry->id }})" wire:confirm="ลบบันทึกเวลานี้?"
                                             class="opacity-0 group-hover:opacity-100 text-erms-muted hover:text-erms-red transition cursor-pointer flex-shrink-0">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        <i class="fa-solid fa-trash text-xs"></i>
                                     </button>
                                 @endif
                             </div>
@@ -414,9 +414,9 @@
                                         @endphp
                                         <div class="w-8 h-8 rounded-md {{ $iconBg }} flex items-center justify-center flex-shrink-0">
                                             @if($isGoogleDrive)
-                                                <svg class="w-4 h-4 {{ $iconColor }}" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 5.5 6.56-11.5L7.71 3.5zm2.86 5l-6.57 11.5h13.14L23.71 8.5H10.57zm6.86-5L12 12l6.57 11.5 3.43-6L17.43 3.5z"/></svg>
+                                                <i class="fa-brands fa-google-drive {{ $iconColor }}"></i>
                                             @else
-                                                <svg class="w-4 h-4 {{ $iconColor }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                                <i class="fa-solid fa-link {{ $iconColor }}"></i>
                                             @endif
                                         </div>
                                     @else
@@ -429,9 +429,9 @@
                                         @endphp
                                         <div class="w-8 h-8 rounded-md {{ $fileIconBg }} flex items-center justify-center flex-shrink-0">
                                             @if($isImage)
-                                                <svg class="w-4 h-4 {{ $fileIconColor }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                <i class="fa-solid fa-image {{ $fileIconColor }}"></i>
                                             @else
-                                                <svg class="w-4 h-4 {{ $fileIconColor }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                                <i class="fa-solid fa-paperclip {{ $fileIconColor }}"></i>
                                             @endif
                                         </div>
                                     @endif
@@ -448,16 +448,16 @@
                                 <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
                                     @if($attachment->isLink())
                                         <a href="{{ $attachment->external_url }}" target="_blank" rel="noopener" class="btn-icon !w-7 !h-7" title="เปิดลิงก์">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                            <i class="fa-solid fa-up-right-from-square text-xs"></i>
                                         </a>
                                     @else
                                         <a href="{{ route('attachments.download', $attachment) }}" class="btn-icon !w-7 !h-7" title="ดาวน์โหลด">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                            <i class="fa-solid fa-download text-xs"></i>
                                         </a>
                                     @endif
                                     <button wire:click="deleteAttachment({{ $attachment->id }})" wire:confirm="ลบไฟล์นี้?"
                                             class="btn-icon !w-7 !h-7 text-erms-red" title="ลบ">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        <i class="fa-solid fa-trash text-xs"></i>
                                     </button>
                                 </div>
                             </div>
@@ -473,12 +473,12 @@
                              class="border-2 border-dashed rounded-lg p-3 transition text-center cursor-pointer hover:border-erms-blue/50">
                             <input type="file" wire:model="uploadFiles" multiple class="absolute inset-0 opacity-0 cursor-pointer" />
                             <div class="flex items-center justify-center gap-2 text-2xs text-erms-muted">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
                                 <span>ลากไฟล์มาวางหรือคลิกเลือก (สูงสุด 10MB)</span>
                             </div>
                         </div>
                         <div wire:loading wire:target="uploadFiles" class="text-2xs text-erms-blue mt-1 flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                            <i class="fa-solid fa-spinner fa-spin"></i>
                             กำลังอัปโหลด...
                         </div>
                     </div>
@@ -495,7 +495,7 @@
                     @if($showLinkForm)
                         <div class="bg-erms-surface-2/60 rounded-lg p-3 space-y-2">
                             <div class="flex items-center gap-2 text-[13px] font-medium text-erms-text mb-2">
-                                <svg class="w-4 h-4 text-erms-purple" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                <i class="fa-solid fa-link text-erms-purple"></i>
                                 เพิ่มลิงก์ (Google Drive, URL อื่นๆ)
                             </div>
                             <input type="text" wire:model="linkName" placeholder="ชื่อลิงก์" class="input-field !text-[13px] !py-1.5 w-full" />
@@ -509,7 +509,7 @@
                         </div>
                     @else
                         <button wire:click="$set('showLinkForm', true)" class="text-2xs text-erms-text-secondary hover:text-erms-blue transition flex items-center gap-1 mt-1">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                            <i class="fa-solid fa-link"></i>
                             เพิ่มลิงก์ Google Drive / URL
                         </button>
                     @endif
@@ -570,7 +570,7 @@
                             <div class="flex items-center gap-1 text-2xs">
                                 @if($update->old_status)
                                     <span class="badge-{{ str_replace('_', '-', $update->old_status) }}">{{ $statusLabels[$update->old_status] ?? $update->old_status }}</span>
-                                    <svg class="w-3 h-3 text-erms-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                    <i class="fa-solid fa-arrow-right text-erms-muted text-xs"></i>
                                 @endif
                                 <span class="badge-{{ str_replace('_', '-', $update->new_status) }}">{{ $statusLabels[$update->new_status] ?? $update->new_status }}</span>
                             </div>

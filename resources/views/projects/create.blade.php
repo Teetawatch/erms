@@ -5,7 +5,7 @@
     @if($templates->count() > 0)
         <div class="max-w-2xl mb-6" x-data="{ open: false }">
             <button @click="open = !open" class="flex items-center gap-2 text-sm text-erms-blue hover:underline font-medium cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <i class="fa-solid fa-file-lines"></i>
                 สร้างจากเทมเพลตโครงการ
             </button>
             <div x-show="open" x-cloak class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -27,7 +27,7 @@
                 @php $tplProject = \App\Models\Project::find(request('template_id')); @endphp
                 @if($tplProject)
                     <div class="bg-erms-blue/5 border border-erms-blue/20 rounded-lg px-3 py-2 text-sm text-erms-blue flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <i class="fa-solid fa-circle-info"></i>
                         สร้างจากเทมเพลต: {{ $tplProject->name }}
                     </div>
                 @endif

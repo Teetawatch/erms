@@ -5,7 +5,7 @@
             <p class="text-sm text-erms-muted">สร้างและใช้เทมเพลตเพื่อลดงานซ้ำ</p>
         </div>
         <button wire:click="$set('showCreateModal', true)" class="btn-primary">
-            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <i class="fa-solid fa-plus mr-1.5"></i>
             สร้างเทมเพลต
         </button>
     </div>
@@ -23,10 +23,10 @@
                     </div>
                     <div class="flex items-center gap-1">
                         <button wire:click="openUseModal({{ $template->id }})" class="text-erms-blue hover:text-erms-blue/80 cursor-pointer" title="ใช้เทมเพลต">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <i class="fa-solid fa-plus"></i>
                         </button>
                         <button wire:click="deleteTemplate({{ $template->id }})" wire:confirm="ลบเทมเพลตนี้?" class="text-erms-muted hover:text-erms-red cursor-pointer" title="ลบ">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
             </div>
         @empty
             <div class="col-span-full card p-12 text-center text-erms-muted">
-                <svg class="w-12 h-12 mx-auto mb-3 text-erms-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <i class="fa-solid fa-file-lines text-5xl text-erms-muted/50 mb-3"></i>
                 <p>ยังไม่มีเทมเพลต</p>
                 <p class="text-xs mt-1">สร้างเทมเพลตเพื่อใช้สร้างงานซ้ำได้เร็วขึ้น</p>
             </div>
@@ -60,7 +60,7 @@
             <div class="px-6 py-4 border-b border-erms-border flex items-center justify-between">
                 <h3 class="font-heading font-bold text-base">สร้างเทมเพลตใหม่</h3>
                 <button wire:click="$set('showCreateModal', false)" class="text-erms-muted hover:text-erms-text cursor-pointer">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             <form wire:submit="createTemplate" class="p-6 space-y-4">
@@ -93,7 +93,7 @@
             <div class="px-6 py-4 border-b border-erms-border flex items-center justify-between">
                 <h3 class="font-heading font-bold text-base">ใช้เทมเพลต: {{ $selectedTemplate->name }}</h3>
                 <button wire:click="$set('showUseModal', false)" class="text-erms-muted hover:text-erms-text cursor-pointer">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             <form wire:submit="useTemplate" class="p-6 space-y-4">
@@ -122,7 +122,7 @@
                         <ul class="space-y-1">
                             @foreach($selectedTemplate->task_data['subtasks'] as $sub)
                                 <li class="text-xs flex items-center gap-2">
-                                    <svg class="w-3 h-3 text-erms-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    <i class="fa-solid fa-chevron-right text-erms-muted text-xs"></i>
                                     {{ $sub['title'] }}
                                 </li>
                             @endforeach

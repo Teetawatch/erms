@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between mb-4">
         <h3 class="font-heading font-bold text-base">กฎอัตโนมัติ</h3>
         <button wire:click="$set('showCreateModal', true)" class="btn-primary text-xs">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <i class="fa-solid fa-plus mr-1"></i>
             เพิ่มกฎ
         </button>
     </div>
@@ -40,17 +40,17 @@
                             ];
                         @endphp
                         <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-erms-blue/10 text-erms-blue text-[10px]">{{ $triggerLabels[$rule->trigger_type] ?? $rule->trigger_type }}</span>
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
                         <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-erms-green/10 text-erms-green text-[10px]">{{ $actionLabels[$rule->action_type] ?? $rule->action_type }}</span>
                     </div>
                 </div>
                 <button wire:click="deleteRule({{ $rule->id }})" wire:confirm="ลบกฎนี้?" class="text-erms-muted hover:text-erms-red cursor-pointer transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
         @empty
             <div class="card p-8 text-center text-erms-muted text-sm">
-                <svg class="w-10 h-10 mx-auto mb-2 text-erms-muted/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <i class="fa-solid fa-bolt text-4xl text-erms-muted/50 mb-2"></i>
                 ยังไม่มีกฎอัตโนมัติ
             </div>
         @endforelse
@@ -63,7 +63,7 @@
             <div class="px-6 py-4 border-b border-erms-border flex items-center justify-between">
                 <h3 class="font-heading font-bold text-base">เพิ่มกฎอัตโนมัติ</h3>
                 <button wire:click="$set('showCreateModal', false)" class="text-erms-muted hover:text-erms-text cursor-pointer">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             <form wire:submit="createRule" class="p-6 space-y-4">

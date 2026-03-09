@@ -11,6 +11,9 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
         <!-- Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -21,7 +24,7 @@
                 <div class="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm" style="background: linear-gradient(135deg, #4f8ef7, #7c5cfc);">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                            <i class="fa-solid fa-clipboard-check text-white"></i>
                         </div>
                         <span class="font-heading font-semibold text-lg text-erms-text">ERMS</span>
                     </div>
@@ -44,7 +47,7 @@
             <div class="flex-1 flex flex-col items-center justify-center px-6 py-20">
                 <div class="max-w-2xl text-center">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-erms-blue/10 text-erms-blue text-sm font-medium mb-6">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <i class="fa-solid fa-bolt"></i>
                         ระบบจัดการทรัพยากรพนักงาน
                     </div>
                     <h1 class="font-heading font-bold text-4xl md:text-5xl text-erms-text mb-4 leading-tight">
@@ -69,14 +72,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 max-w-4xl w-full">
                     <div class="card p-6 text-center">
                         <div class="w-12 h-12 rounded-xl bg-erms-blue/10 flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-6 h-6 text-erms-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                            <i class="fa-solid fa-folder text-2xl text-erms-blue"></i>
                         </div>
                         <h3 class="font-heading font-semibold text-erms-text mb-2">จัดการโครงการ</h3>
                         <p class="text-sm text-erms-muted">สร้างโครงการ ติดตามความคืบหน้า มอบหมายงานให้ทีม</p>
                     </div>
                     <div class="card p-6 text-center">
                         <div class="w-12 h-12 rounded-xl bg-erms-purple/10 flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-6 h-6 text-erms-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            <i class="fa-solid fa-chart-column text-2xl text-erms-purple"></i>
                         </div>
                         <h3 class="font-heading font-semibold text-erms-text mb-2">รายงาน & วิเคราะห์</h3>
                         <p class="text-sm text-erms-muted">ดูรายงานสรุป ส่งออก PDF วิเคราะห์ประสิทธิภาพทีม</p>

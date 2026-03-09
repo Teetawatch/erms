@@ -22,7 +22,7 @@
     {{-- ═══ Filter Bar (Asana-style inline) ═══ --}}
     <div class="flex flex-wrap items-center gap-2 mb-3">
         <div class="relative flex-1 min-w-[180px] max-w-xs">
-            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-erms-muted pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-erms-muted pointer-events-none text-sm"></i>
             <input type="text" wire:model.live.debounce.300ms="search" class="input-field !pl-9 !py-1.5 !text-[13px]" placeholder="ค้นหางาน...">
         </div>
         <select wire:model.live="filterStatus" class="input-field !w-auto !py-1.5 !text-[13px] !pr-8">
@@ -97,7 +97,7 @@
                         <button wire:click="quickStatusChange({{ $task->id }}, '{{ $task->status === 'done' ? 'todo' : 'done' }}')"
                                 class="task-checkbox {{ $task->status === 'done' ? 'checked' : '' }}" title="สลับสถานะ">
                             @if($task->status === 'done')
-                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                <i class="fa-solid fa-check text-white text-xs"></i>
                             @endif
                         </button>
                         <div class="min-w-0 flex-1">
@@ -153,7 +153,7 @@
                 </div>
             @empty
                 <div class="py-12 text-center">
-                    <svg class="w-10 h-10 mx-auto text-erms-muted/50 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                    <i class="fa-solid fa-clipboard-check text-4xl text-erms-muted/50 mb-2"></i>
                     <p class="text-[13px] text-erms-muted">ไม่พบงาน</p>
                 </div>
             @endforelse

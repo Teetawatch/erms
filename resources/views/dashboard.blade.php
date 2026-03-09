@@ -11,18 +11,18 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
         @php
             $stats = [
-                ['label' => 'โครงการ', 'value' => $totalProjects, 'color' => 'blue', 'icon' => 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z'],
-                ['label' => 'งานวันนี้', 'value' => $tasksToday, 'color' => 'orange', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
-                ['label' => 'เสร็จสัปดาห์นี้', 'value' => $completedThisWeek, 'color' => 'green', 'icon' => 'M5 13l4 4L19 7'],
-                ['label' => 'รอตรวจสอบ', 'value' => $pendingReview, 'color' => 'purple', 'icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'],
-                ['label' => 'เกินกำหนด', 'value' => $overdueTasks, 'color' => 'red', 'icon' => 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+                ['label' => 'โครงการ', 'value' => $totalProjects, 'color' => 'blue', 'icon' => 'fa-folder'],
+                ['label' => 'งานวันนี้', 'value' => $tasksToday, 'color' => 'orange', 'icon' => 'fa-clipboard-check'],
+                ['label' => 'เสร็จสัปดาห์นี้', 'value' => $completedThisWeek, 'color' => 'green', 'icon' => 'fa-check'],
+                ['label' => 'รอตรวจสอบ', 'value' => $pendingReview, 'color' => 'purple', 'icon' => 'fa-eye'],
+                ['label' => 'เกินกำหนด', 'value' => $overdueTasks, 'color' => 'red', 'icon' => 'fa-circle-exclamation'],
             ];
         @endphp
         @foreach($stats as $stat)
             <div class="card p-4">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-lg bg-erms-{{ $stat['color'] }}-light flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4.5 h-4.5 text-erms-{{ $stat['color'] }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $stat['icon'] }}"/></svg>
+                        <i class="fa-solid {{ $stat['icon'] }} text-erms-{{ $stat['color'] }}"></i>
                     </div>
                     <div>
                         <p class="text-xl font-semibold text-erms-text leading-none {{ $stat['color'] === 'red' && $stat['value'] > 0 ? 'text-erms-red' : '' }}">{{ $stat['value'] }}</p>
@@ -133,7 +133,7 @@
                             <div class="flex-1 min-w-0 flex items-center gap-3">
                                 <span class="task-checkbox {{ $task->status === 'done' ? 'checked' : '' }}">
                                     @if($task->status === 'done')
-                                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        <i class="fa-solid fa-check text-white text-xs"></i>
                                     @endif
                                 </span>
                                 <div class="min-w-0">
@@ -149,7 +149,7 @@
                         </a>
                     @empty
                         <div class="py-10 text-center">
-                            <svg class="w-10 h-10 mx-auto text-erms-muted/40 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <i class="fa-solid fa-circle-check text-4xl text-erms-muted/40 mb-2"></i>
                             <p class="text-[13px] text-erms-muted">ไม่มีงานที่ต้องทำ</p>
                         </div>
                     @endforelse

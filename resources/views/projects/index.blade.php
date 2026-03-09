@@ -5,7 +5,7 @@
         <p class="text-[13px] text-erms-text-secondary">โครงการทั้งหมด {{ $projects->total() }} รายการ</p>
         @can('manage-all-projects')
         <a href="{{ route('projects.create') }}" class="btn-primary !text-[13px]">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            <i class="fa-solid fa-plus"></i>
             สร้างโครงการ
         </a>
         @endcan
@@ -56,12 +56,12 @@
                             <span class="w-6 h-6 rounded-full bg-erms-surface-2 ring-2 ring-white flex items-center justify-center text-2xs text-erms-muted font-medium">+{{ $project->members->count() - 5 }}</span>
                         @endif
                     </div>
-                    <svg class="w-4 h-4 text-erms-muted opacity-0 group-hover:opacity-100 transition" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    <i class="fa-solid fa-chevron-right text-erms-muted opacity-0 group-hover:opacity-100 transition"></i>
                 </div>
             </a>
         @empty
             <div class="col-span-full py-16 text-center">
-                <svg class="w-12 h-12 mx-auto text-erms-muted/40 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                <i class="fa-solid fa-folder-open text-5xl text-erms-muted/40 mb-3"></i>
                 <p class="text-[13px] text-erms-muted">ยังไม่มีโครงการ</p>
             </div>
         @endforelse

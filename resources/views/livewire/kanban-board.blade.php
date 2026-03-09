@@ -6,7 +6,7 @@
             <div class="px-6 py-4 border-b border-erms-border-light flex items-center justify-between">
                 <h3 class="font-semibold text-base">สร้างงานใหม่</h3>
                 <button wire:click="$set('showCreateModal', false)" class="btn-icon">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             <form wire:submit="createTask" class="p-6 space-y-4">
@@ -66,7 +66,7 @@
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" wire:click="$set('showCreateModal', false)" class="btn-secondary">ยกเลิก</button>
                     <button type="submit" class="btn-primary">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <i class="fa-solid fa-plus"></i>
                         สร้างงาน
                     </button>
                 </div>
@@ -78,7 +78,7 @@
     {{-- ═══ Filter Bar ═══ --}}
     <div class="flex flex-wrap items-center gap-2 mb-4">
         <div class="relative flex-1 min-w-[160px] max-w-[220px]">
-            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-erms-muted pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-erms-muted pointer-events-none text-sm"></i>
             <input type="text" wire:model.live.debounce.300ms="searchQuery" class="input-field !pl-9 !py-1.5 !text-[13px]" placeholder="ค้นหางาน...">
         </div>
         <select wire:model.live="filterPriority" class="input-field !w-auto !py-1.5 !text-[13px] !pr-8">
@@ -96,7 +96,7 @@
         </select>
         @if($filterPriority || $filterAssignee || $searchQuery)
             <button wire:click="clearFilters" class="text-2xs text-erms-red hover:underline font-medium cursor-pointer flex items-center gap-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <i class="fa-solid fa-xmark"></i>
                 ล้างตัวกรอง
             </button>
         @endif
@@ -126,7 +126,7 @@
                         </span>
                     </div>
                     <button wire:click="openCreateModal('{{ $status }}')" class="btn-icon !w-6 !h-6" aria-label="เพิ่มงาน">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <i class="fa-solid fa-plus text-sm"></i>
                     </button>
                 </div>
 
@@ -143,7 +143,7 @@
                                         class="task-checkbox flex-shrink-0 mt-0.5 {{ $task->status === 'done' ? 'checked' : '' }}"
                                         title="{{ $task->status === 'done' ? 'เสร็จแล้ว' : 'ทำเครื่องหมายเสร็จ' }}">
                                     @if($task->status === 'done')
-                                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        <i class="fa-solid fa-check text-white text-xs"></i>
                                     @endif
                                 </button>
                                 <a href="{{ route('tasks.show', $task) }}" class="text-[13px] font-medium text-erms-text hover:text-erms-blue transition leading-snug flex-1 {{ $task->status === 'done' ? 'line-through text-erms-muted' : '' }}" wire:navigate>
@@ -162,7 +162,7 @@
                                     @endphp
                                     @if($blocked)
                                         <span class="text-2xs text-erms-red bg-erms-red/10 px-1.5 py-0.5 rounded flex items-center gap-1" title="รองานอื่น">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            <i class="fa-solid fa-circle-exclamation"></i>
                                             ถูกบล็อก
                                         </span>
                                     @endif
@@ -178,7 +178,7 @@
                                     @endif
                                     @if($task->subtasks->count())
                                         <span class="text-2xs text-erms-muted flex items-center gap-0.5" title="งานย่อย">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                            <i class="fa-solid fa-list-check text-xs"></i>
                                             {{ $task->subtasks->where('status', 'done')->count() }}/{{ $task->subtasks->count() }}
                                         </span>
                                     @endif
@@ -190,7 +190,7 @@
                                         $dueDateClass = $isOverdue ? 'text-erms-red font-medium' : ($isDueSoon ? 'text-erms-orange font-medium' : 'text-erms-muted');
                                     @endphp
                                     <span class="text-2xs flex items-center gap-1 {{ $dueDateClass }}">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        <i class="fa-regular fa-calendar"></i>
                                         {{ $task->due_date->translatedFormat('d M') }}
                                         @if($isOverdue) เลยกำหนด @elseif($isDueSoon) ใกล้ถึง @endif
                                     </span>
@@ -202,7 +202,7 @@
                     {{-- Add Task Placeholder --}}
                     <button wire:click="openCreateModal('{{ $status }}')"
                             class="w-full text-left px-3 py-2 rounded-lg text-[13px] text-erms-muted hover:bg-white hover:shadow-asana-card transition flex items-center gap-2 cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <i class="fa-solid fa-plus"></i>
                         เพิ่มงาน
                     </button>
                 </div>
