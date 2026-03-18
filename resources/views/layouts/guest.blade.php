@@ -8,9 +8,6 @@
         <title>{{ config('app.name', 'ERMS') }}</title>
 
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -19,7 +16,6 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
-            /* Light theme and Kanit font for login page */
             .auth-bg {
                 background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
                 position: relative;

@@ -45,8 +45,8 @@ export default {
                 },
             },
             fontFamily: {
-                heading: ['Inter', 'Noto Sans Thai', ...defaultTheme.fontFamily.sans],
-                sans: ['Inter', 'Noto Sans Thai', ...defaultTheme.fontFamily.sans],
+                heading: ['Anakotmai', ...defaultTheme.fontFamily.sans],
+                sans: ['Anakotmai', ...defaultTheme.fontFamily.sans],
             },
             fontSize: {
                 '2xs': ['0.6875rem', { lineHeight: '1rem' }],
