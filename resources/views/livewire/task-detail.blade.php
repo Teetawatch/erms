@@ -352,18 +352,46 @@
                 @if($showTimeEntryForm)
                     <div class="mb-3 bg-erms-surface-2/60 rounded-lg p-3 space-y-2">
                         <form wire:submit="addTimeEntry" class="space-y-2">
+                            {{-- Date --}}
+                            <div>
+                                <label class="text-2xs text-erms-muted mb-0.5 block">วันที่ *</label>
+                                <input type="date" wire:model="timeEntryDate" class="input-field !text-[13px] !py-1.5 w-full">
+                                @error('timeEntryDate') <p class="text-2xs text-erms-red mt-0.5">{{ $message }}</p> @enderror
+                            </div>
+                            {{-- Start / End time --}}
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="text-2xs text-erms-muted mb-0.5 block">ชั่วโมง *</label>
-                                    <input type="number" wire:model="timeEntryHours" step="0.25" min="0.25" max="24" class="input-field !text-[13px] !py-1.5 w-full" placeholder="เช่น 2.5">
-                                    @error('timeEntryHours') <p class="text-2xs text-erms-red mt-0.5">{{ $message }}</p> @enderror
+                                    <label class="text-2xs text-erms-muted mb-0.5 block">เวลาเริ่ม *</label>
+                                    <input type="time" wire:model.live="timeEntryStartTime" class="input-field !text-[13px] !py-1.5 w-full">
+                                    @error('timeEntryStartTime') <p class="text-2xs text-erms-red mt-0.5">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
-                                    <label class="text-2xs text-erms-muted mb-0.5 block">วันที่ *</label>
-                                    <input type="date" wire:model="timeEntryDate" class="input-field !text-[13px] !py-1.5 w-full">
-                                    @error('timeEntryDate') <p class="text-2xs text-erms-red mt-0.5">{{ $message }}</p> @enderror
+                                    <label class="text-2xs text-erms-muted mb-0.5 block">เวลาสิ้นสุด *</label>
+                                    <input type="time" wire:model.live="timeEntryEndTime" class="input-field !text-[13px] !py-1.5 w-full">
+                                    @error('timeEntryEndTime') <p class="text-2xs text-erms-red mt-0.5">{{ $message }}</p> @enderror
                                 </div>
                             </div>
+                            {{-- Auto-calculated hours preview --}}
+                            @if($timeEntryStartTime && $timeEntryEndTime)
+                                @php
+                                    $s = \Carbon\Carbon::createFromTimeString($timeEntryStartTime);
+                                    $e = \Carbon\Carbon::createFromTimeString($timeEntryEndTime);
+                                    $calcHours = $e->greaterThan($s) ? round($s->diffInMinutes($e) / 60, 2) : null;
+                                @endphp
+                                @if($calcHours !== null)
+                                    <div class="flex items-center gap-1.5 text-2xs bg-erms-blue-light/60 text-erms-blue rounded-md px-2.5 py-1.5">
+                                        <i class="fa-solid fa-calculator"></i>
+                                        <span>รวม <strong>{{ $calcHours }}</strong> ชั่วโมง
+                                            ({{ $timeEntryStartTime }} – {{ $timeEntryEndTime }})</span>
+                                    </div>
+                                @endif
+                            @endif
+                            {{-- Overtime toggle --}}
+                            <label class="flex items-center gap-2 cursor-pointer select-none">
+                                <input type="checkbox" wire:model="timeEntryIsOvertime" class="checkbox checkbox-sm checkbox-warning">
+                                <span class="text-2xs text-erms-text-secondary">นอกเวลางาน / วันหยุด</span>
+                            </label>
+                            {{-- Description --}}
                             <div>
                                 <label class="text-2xs text-erms-muted mb-0.5 block">รายละเอียด</label>
                                 <input type="text" wire:model="timeEntryDescription" class="input-field !text-[13px] !py-1.5 w-full" placeholder="อธิบายงานที่ทำ...">
@@ -381,13 +409,25 @@
                         @foreach($task->timeEntries->sortByDesc('date_worked') as $entry)
                             <div class="flex items-center justify-between bg-erms-surface-2/40 rounded-lg px-3 py-2 group hover:bg-erms-surface-2/60 transition">
                                 <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="w-8 h-8 rounded-md bg-erms-blue-light flex items-center justify-center flex-shrink-0">
-                                        <i class="fa-solid fa-clock text-erms-blue"></i>
+                                    <div class="w-8 h-8 rounded-md {{ $entry->is_overtime ? 'bg-amber-100' : 'bg-erms-blue-light' }} flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-clock {{ $entry->is_overtime ? 'text-amber-500' : 'text-erms-blue' }}"></i>
                                     </div>
                                     <div class="min-w-0">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-[13px] font-semibold text-erms-blue">{{ number_format($entry->hours, 2) }} ชม.</span>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <span class="text-[13px] font-semibold {{ $entry->is_overtime ? 'text-amber-500' : 'text-erms-blue' }}">
+                                                {{ number_format($entry->hours, 2) }} ชม.
+                                            </span>
+                                            @if($entry->start_time && $entry->end_time)
+                                                <span class="text-2xs text-erms-muted font-mono">
+                                                    {{ \Carbon\Carbon::createFromTimeString($entry->start_time)->format('H:i') }}
+                                                    –
+                                                    {{ \Carbon\Carbon::createFromTimeString($entry->end_time)->format('H:i') }}
+                                                </span>
+                                            @endif
                                             <span class="text-2xs text-erms-muted">{{ $entry->date_worked->translatedFormat('d M Y') }}</span>
+                                            @if($entry->is_overtime)
+                                                <span class="text-2xs bg-amber-100 text-amber-600 rounded px-1.5 py-0.5 font-medium">นอกเวลา</span>
+                                            @endif
                                         </div>
                                         <div class="flex items-center gap-1.5 text-2xs text-erms-muted">
                                             <span>{{ $entry->user->name }}</span>

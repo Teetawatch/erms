@@ -36,7 +36,7 @@
                     {{-- Project & Assignee --}}
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-2xs font-medium text-erms-text-secondary mb-1 block">โครงการ <span class="text-erms-red">*</span></label>
+                            <label class="text-2xs font-medium text-erms-text-secondary mb-1 block">โครงการ</label>
                             <select wire:model="projectId" class="input-field !text-[13px] !py-1.5">
                                 <option value="">เลือกโครงการ</option>
                                 @foreach($this->projects as $project)

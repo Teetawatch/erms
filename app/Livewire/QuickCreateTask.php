@@ -24,7 +24,7 @@ class QuickCreateTask extends Component
 
     protected $rules = [
         'title' => 'required|string|max:255',
-        'projectId' => 'required|exists:projects,id',
+        'projectId' => 'nullable|exists:projects,id',
         'assignedTo' => 'nullable|exists:users,id',
         'priority' => 'required|in:low,medium,high,urgent',
         'dueDate' => 'nullable|date',
@@ -33,7 +33,6 @@ class QuickCreateTask extends Component
 
     protected $messages = [
         'title.required' => 'กรุณากรอกชื่องาน',
-        'projectId.required' => 'กรุณาเลือกโครงการ',
     ];
 
     public function openModal()
@@ -46,15 +45,23 @@ class QuickCreateTask extends Component
     {
         $this->validate();
 
+        $projectId = $this->projectId ?: null;
+        $sortQuery = Task::where('status', 'todo');
+        if ($projectId) {
+            $sortQuery->where('project_id', $projectId);
+        } else {
+            $sortQuery->whereNull('project_id');
+        }
+
         $task = Task::create([
-            'project_id' => $this->projectId,
+            'project_id' => $projectId,
             'title' => $this->title,
             'description' => $this->description ?: null,
             'status' => 'todo',
             'priority' => $this->priority,
             'assigned_to' => $this->assignedTo ?: null,
             'due_date' => $this->dueDate ?: null,
-            'sort_order' => Task::where('project_id', $this->projectId)->where('status', 'todo')->max('sort_order') + 1,
+            'sort_order' => $sortQuery->max('sort_order') + 1,
         ]);
 
         TaskUpdate::create([

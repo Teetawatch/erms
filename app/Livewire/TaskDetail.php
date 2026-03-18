@@ -40,7 +40,9 @@ class TaskDetail extends Component
 
     // Time tracking
     public $showTimeEntryForm = false;
-    public $timeEntryHours = '';
+    public $timeEntryStartTime = '';
+    public $timeEntryEndTime = '';
+    public $timeEntryIsOvertime = false;
     public $timeEntryDescription = '';
     public $timeEntryDate = '';
 
@@ -293,25 +295,40 @@ class TaskDetail extends Component
     public function addTimeEntry()
     {
         $this->validate([
-            'timeEntryHours' => 'required|numeric|min:0.25|max:24',
+            'timeEntryStartTime' => 'required|date_format:H:i',
+            'timeEntryEndTime' => 'required|date_format:H:i',
             'timeEntryDescription' => 'nullable|string|max:500',
             'timeEntryDate' => 'required|date',
         ], [
-            'timeEntryHours.required' => 'กรุณากรอกจำนวนชั่วโมง',
-            'timeEntryHours.min' => 'ต้องบันทึกอย่างน้อย 0.25 ชั่วโมง',
-            'timeEntryHours.max' => 'ไม่สามารถบันทึกเกิน 24 ชั่วโมง',
+            'timeEntryStartTime.required' => 'กรุณากรอกเวลาเริ่ม',
+            'timeEntryStartTime.date_format' => 'รูปแบบเวลาไม่ถูกต้อง',
+            'timeEntryEndTime.required' => 'กรุณากรอกเวลาสิ้นสุด',
+            'timeEntryEndTime.date_format' => 'รูปแบบเวลาไม่ถูกต้อง',
             'timeEntryDate.required' => 'กรุณาเลือกวันที่',
         ]);
+
+        $start = \Carbon\Carbon::createFromTimeString($this->timeEntryStartTime);
+        $end = \Carbon\Carbon::createFromTimeString($this->timeEntryEndTime);
+        if ($end->lessThanOrEqualTo($start)) {
+            $this->addError('timeEntryEndTime', 'เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม');
+            return;
+        }
+        $hours = round($start->diffInMinutes($end) / 60, 2);
 
         TimeEntry::create([
             'task_id' => $this->task->id,
             'user_id' => auth()->id(),
-            'hours' => $this->timeEntryHours,
+            'hours' => $hours,
+            'start_time' => $this->timeEntryStartTime,
+            'end_time' => $this->timeEntryEndTime,
+            'is_overtime' => $this->timeEntryIsOvertime,
             'description' => $this->timeEntryDescription,
             'date_worked' => $this->timeEntryDate,
         ]);
 
-        $this->timeEntryHours = '';
+        $this->timeEntryStartTime = '';
+        $this->timeEntryEndTime = '';
+        $this->timeEntryIsOvertime = false;
         $this->timeEntryDescription = '';
         $this->timeEntryDate = now()->format('Y-m-d');
         $this->showTimeEntryForm = false;
