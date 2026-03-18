@@ -45,8 +45,8 @@ export default {
                 },
             },
             fontFamily: {
-                heading: ['Anakotmai', ...defaultTheme.fontFamily.sans],
-                sans: ['Anakotmai', ...defaultTheme.fontFamily.sans],
+                heading: ['Kanit', ...defaultTheme.fontFamily.sans],
+                sans: ['Kanit', ...defaultTheme.fontFamily.sans],
             },
             fontSize: {
                 '2xs': ['0.6875rem', { lineHeight: '1rem' }],
